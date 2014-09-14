@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   
+	 <extension point="org.eclipse.debug.core.launchConfigurationTypes">
+	  <launchConfigurationType
+	   id="ru.eshangin.CompositeLaunch"
+	   delegate="ru.eshangin.compositelaunch.CompositeLaunchConfigurationDelegate"
+	   modes="run"
+	   name="Composite Launch">
+	  </launchConfigurationType>
+	 </extension>
+	 
+	 <extension point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+	  <launchConfigurationTypeImage
+	     id="ru.eshangin.CompositeLaunchConfigurationTypeImage"
+	     configTypeID="ru.eshangin.CompositeLaunch"
+	     icon="icons/sample.gif">
+	  </launchConfigurationTypeImage>
+	 </extension>	 
+	 
+	 <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+	  <launchConfigurationTabGroup
+	      id="com.example.CompositeLaunchTabGroup"
+	      type="ru.eshangin.CompositeLaunch"
+	      class="ru.eshangin.compositelaunch.CompositeLaunchConfigurationTabGroup">
+	  </launchConfigurationTabGroup>
+	 </extension>	 
+
+</plugin>
