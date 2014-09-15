@@ -11,6 +11,8 @@ public class CompositeLaunchConfigurationTabGroup extends AbstractLaunchConfigur
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
 		ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] { new CommonTab() }; 
 		setTabs(tabs);
+		
+		Activator.getDefault().setCurrentMode(mode);
 	}
 
 }

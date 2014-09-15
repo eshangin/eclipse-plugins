@@ -10,9 +10,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 
 	@Override
 	public void launch(ILaunchConfiguration configuration, String mode,
-			ILaunch launch, IProgressMonitor monitor) throws CoreException {
-		// TODO Auto-generated method stub
-		
+			ILaunch launch, IProgressMonitor monitor) throws CoreException {				
 	}
 
 }

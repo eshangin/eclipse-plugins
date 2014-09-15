@@ -6,7 +6,7 @@
 	  <launchConfigurationType
 	   id="ru.eshangin.CompositeLaunch"
 	   delegate="ru.eshangin.compositelaunch.CompositeLaunchConfigurationDelegate"
-	   modes="run"
+	   modes="run, debug"
 	   name="Composite Launch">
 	  </launchConfigurationType>
 	 </extension>
@@ -21,10 +21,19 @@
 	 
 	 <extension point="org.eclipse.debug.ui.launchConfigurationTabGroups">
 	  <launchConfigurationTabGroup
-	      id="com.example.CompositeLaunchTabGroup"
+	      id="ru.eshangin.CompositeLaunchTabGroup"
 	      type="ru.eshangin.CompositeLaunch"
 	      class="ru.eshangin.compositelaunch.CompositeLaunchConfigurationTabGroup">
 	  </launchConfigurationTabGroup>
 	 </extension>	 
+	 
+	<extension point="org.eclipse.debug.ui.launchConfigurationTabs">
+	    <tab
+	       class="ru.eshangin.compositelaunch.SelectLaunchersTab"
+	        group="ru.eshangin.CompositeLaunchTabGroup"
+	        id="ru.eshangin.selectLaunchersTab"
+	        name="Launchers">
+	    </tab>
+	 </extension> 	 
 
 </plugin>
