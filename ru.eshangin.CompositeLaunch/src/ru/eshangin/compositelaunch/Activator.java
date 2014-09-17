@@ -1,5 +1,8 @@
 package ru.eshangin.compositelaunch;
 
+import java.util.ArrayList;
+
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
@@ -16,6 +19,8 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 	
 	private String launchMode;
+	
+	private ArrayList<ILaunchConfiguration> selectedConfigurations = new ArrayList<ILaunchConfiguration>();
 	
 	/**
 	 * The constructor
@@ -67,5 +72,17 @@ public class Activator extends AbstractUIPlugin {
 	
 	public String getCurrentMode() {
 		return launchMode;
+	}
+
+	public void addConfigurationToLaunch(ILaunchConfiguration configuration) {
+		selectedConfigurations.add(configuration);
+	}
+
+	public void clearLaunchConfigurations() {
+		selectedConfigurations.clear();;
+	}
+	
+	public ArrayList<ILaunchConfiguration> getSelectedConfigurations() {
+		return selectedConfigurations;
 	}
 }
