@@ -1,5 +1,11 @@
 package ru.eshangin.compositelaunch;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -94,11 +100,31 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		// get launch manager
 		final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		
-		ILaunchConfiguration[] launchConfigurations;
+		ArrayList<ILaunchConfiguration> launchConfigurations;
+		
 		try {
 						
 			// get all launch configuration types
-			ILaunchConfigurationType[] launchTypes = manager.getLaunchConfigurationTypes();
+			ArrayList<ILaunchConfigurationType> launchTypes = new ArrayList<ILaunchConfigurationType>(Arrays.asList(manager.getLaunchConfigurationTypes()));
+			
+			// comparator to order launch configiration types by name
+			Comparator<ILaunchConfigurationType> ltComparator = new Comparator<ILaunchConfigurationType>() {				
+				@Override
+				public int compare(ILaunchConfigurationType arg0, ILaunchConfigurationType arg1) {
+					return arg0.getName().compareTo(arg1.getName());
+				}
+			};
+			
+			// comparator to order launch configirations by name
+			Comparator<ILaunchConfiguration> lcComparator = new Comparator<ILaunchConfiguration>() {				
+				@Override
+				public int compare(ILaunchConfiguration arg0, ILaunchConfiguration arg1) {
+					return arg0.getName().compareTo(arg1.getName());
+				}
+			};
+			
+			// order types
+			Collections.sort(launchTypes, ltComparator);
 			
 			for (ILaunchConfigurationType configurationType : launchTypes) {
 				
@@ -112,7 +138,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			        treeItem0.setText(configurationType.getName());
 			        
 			        // get all launch configurations of specified type
-			        launchConfigurations = manager.getLaunchConfigurations(configurationType);
+			        launchConfigurations = new ArrayList<ILaunchConfiguration>(Arrays.asList(manager.getLaunchConfigurations(configurationType)));
+			        
+			        // order configurations
+			        Collections.sort(launchConfigurations, lcComparator);
 			        
 					for (ILaunchConfiguration launchConf : launchConfigurations) {
 						
