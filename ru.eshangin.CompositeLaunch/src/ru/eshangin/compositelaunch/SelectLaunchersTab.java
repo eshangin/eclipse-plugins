@@ -102,37 +102,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		System.out.println("setDefaults");
 	}
 	
-	private String getConfigurationTypeImagePath(ILaunchConfigurationType configType) throws IOException {
-		
-		IConfigurationElement[] cel = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.debug.ui.launchConfigurationTypeImages"); 
-        
-        for (IConfigurationElement iConfigurationElement : cel) {
-        	        	
-        	String configTypeIDAttr = iConfigurationElement.getAttribute("configTypeID");
-        	        	
-        	if (configType.getIdentifier().equals(configTypeIDAttr)) {
-        		
-        		String iconAttr = iConfigurationElement.getAttribute("icon");
-        		
-        		System.out.println(configType.getIdentifier() + " " + configType.getName() + " " + configTypeIDAttr);
-        		
-	        	URL[] entries = FileLocator.findEntries(Activator.getDefault().getBundle(), new Path(iconAttr));
-	        					        					        
-	        	if (entries.length > 0) {
-	        		URL iconUrl = FileLocator.resolve(entries[0]);
-	        		//System.out.println(iconUrl);
-	        		
-	        		//treeItem0.setImage(new Image(null, new File(iconUrl.getPath()).getAbsolutePath()));
-	        		return new File(iconUrl.getPath()).getAbsolutePath();
-	        	}
-	        	
-	        	return null;
-        	}
-		}
-        
-        return null;
-	}
-
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		
@@ -202,7 +171,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				        	        	
 				        	if (configurationType.getIdentifier().equals(configTypeIDAttr)) {
 				        						        		
-				        		//URL uf = FileLocator.find(new URL(iconAttr));
 				        		//System.out.println(configurationType.getIdentifier() + " " + configurationType.getName() + " " + uf.toString());
 				        		
 				        		//BundleUtility.
@@ -211,6 +179,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				        		//Bundle b = FrameworkUtil.getBundle(configurationType.getClass());
 
 				        		//FileLocator.findEntries(Platform.getBundle("org.eclipse.jdt.junit"), new Path(iconAttr))
+				        		
 				        		// TODO :: fix calculation of symbolic name
 				        		Bundle b = Platform.getBundle(configurationType.getIdentifier().substring(0, configurationType.getIdentifier().lastIndexOf(".")));
 				        		
@@ -222,29 +191,12 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 						        	if (entries.length > 0) {
 						        		URL iconUrl = FileLocator.resolve(entries[0]);
 						        		
-						        		//System.out.println(iconUrl);
-						        		
-						        		//treeItem0.setImage(new Image(null, new File(iconUrl.getPath()).getAbsolutePath()));
-						        		//return new File(iconUrl.getPath()).getAbsolutePath();
 						        		treeItem0.setImage(new Image(null, new File(FileLocator.toFileURL(entries[0]).getPath()).getAbsolutePath()));
 						        	}
-						        	
-						        	//return null;
 				        		}
 				        	}
 						}
 				        
-//				        String iconPath = getConfigurationTypeImagePath(configurationType);
-//				        
-//				        if (iconPath != null) {
-//				        	treeItem0.setImage(new Image(null, iconPath));
-//				        }
-				        
-				        //String iconPath = cel[0].getAttribute("icon");
-				        
-				        //treeItem0.setImage(new Image(null, iconPath));
-				        //treeItem0.setImage(configurationType.getAttribute(""));
-				        			        				        
 				        // order configurations
 				        Collections.sort(launchConfigurations, lcComparator);
 				        
@@ -257,15 +209,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 						        treeItem1.setText(launchConf.getName());
 						        
 						        treeItem1.setData(launchConf);
-						        
-								//if (launchConf.supportsMode(configuration.getm())) {				
-									//launchConf.launch("run", monitor);
-								//}
-								//else {
-									//System.out.println(launchConf.getName() + " not supports '" + configuration.getName() + "' mode");
-								//}
-								//Map<String, Object> attrs = launchConf.getAttributes();
-								//attrs.
 							}
 						}	
 						
