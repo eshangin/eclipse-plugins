@@ -23,6 +23,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.internal.ui.DebugPluginImages;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -160,42 +161,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 						TreeItem treeItem0 = new TreeItem(tree, 0);
 				        treeItem0.setText(configurationType.getName());
 				        
-				        IConfigurationElement[] cel = Platform.getExtensionRegistry().getConfigurationElementsFor("org.eclipse.debug.ui.launchConfigurationTypeImages"); 
-				        
-				        for (IConfigurationElement iConfigurationElement : cel) {
-				        	        	
-				        	String configTypeIDAttr = iConfigurationElement.getAttribute("configTypeID");
-				        	
-				        	String iconAttr = iConfigurationElement.getAttribute("icon");
-				        	System.out.println(configurationType.getIdentifier() + " " + configurationType.getName() + " " + iconAttr);
-				        	        	
-				        	if (configurationType.getIdentifier().equals(configTypeIDAttr)) {
-				        						        		
-				        		//System.out.println(configurationType.getIdentifier() + " " + configurationType.getName() + " " + uf.toString());
-				        		
-				        		//BundleUtility.
-				        		//System.out.println(FileLocator.toFileURL(url));
-				        		
-				        		//Bundle b = FrameworkUtil.getBundle(configurationType.getClass());
-
-				        		//FileLocator.findEntries(Platform.getBundle("org.eclipse.jdt.junit"), new Path(iconAttr))
-				        		
-				        		// TODO :: fix calculation of symbolic name
-				        		Bundle b = Platform.getBundle(configurationType.getIdentifier().substring(0, configurationType.getIdentifier().lastIndexOf(".")));
-				        		
-				        		if (b != null) {
-					        		System.out.println(configurationType.getClass().getName());
-					        		
-						        	URL[] entries = FileLocator.findEntries(b, new Path(iconAttr));
-						        						        					        					       
-						        	if (entries.length > 0) {
-						        		URL iconUrl = FileLocator.resolve(entries[0]);
-						        		
-						        		treeItem0.setImage(new Image(null, new File(FileLocator.toFileURL(entries[0]).getPath()).getAbsolutePath()));
-						        	}
-				        		}
-				        	}
-						}
+		        		Image confTypeImage = DebugPluginImages.getImage(configurationType.getIdentifier());
+		        		
+		        		treeItem0.setImage(confTypeImage);
 				        
 				        // order configurations
 				        Collections.sort(launchConfigurations, lcComparator);
@@ -207,6 +175,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 								// view current configuration
 								TreeItem treeItem1 = new TreeItem(treeItem0, 0);
 						        treeItem1.setText(launchConf.getName());
+						        treeItem1.setImage(confTypeImage);
 						        
 						        treeItem1.setData(launchConf);
 							}
@@ -221,9 +190,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (InvalidRegistryObjectException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
