@@ -1,23 +1,12 @@
 package ru.eshangin.compositelaunch;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
-import org.eclipse.core.internal.utils.FileUtil;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
@@ -27,22 +16,15 @@ import org.eclipse.debug.internal.ui.DebugPluginImages;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.program.Program;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.ui.internal.util.BundleUtility;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 
+@SuppressWarnings("restriction")
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
-	private Text fProgramText;
-	private Button fProgramButton;
 	private Tree tree;
 	
 	@Override
@@ -71,30 +53,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		setControl(comp);
 		
-		System.out.println("createControl");
-		
-//		GridLayout topLayout = new GridLayout();
-//		topLayout.verticalSpacing = 0;
-//		topLayout.numColumns = 3;
-//		comp.setLayout(topLayout);
-//		//comp.setFont(font);
-//		
-//		createVerticalSpacer(comp, 3);
-//		
-//		Label programLabel = new Label(comp, SWT.NONE);
-//		programLabel.setText("&Program:");
-//		//GridData gd = new GridData(GridData.BEGINNING);
-//		//programLabel.setLayoutData(gd);
-//		//programLabel.setFont(font);
-//		
-//		fProgramText = new Text(comp, SWT.SINGLE | SWT.BORDER);
-//		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
-//		fProgramText.setLayoutData(gd);
-//		//fProgramText.setFont(font);
-//		
-//		
-//		fProgramButton = createPushButton(comp, "&Browse...", null); //$NON-NLS-1$
-		
+		System.out.println("createControl");		
 	}
 
 	@Override
@@ -117,12 +76,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		// get launch manager
 		final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 		
-		ArrayList<ILaunchConfiguration> launchConfigurations;
-		
 		try {
-						
-			// get all launch configuration types
-			ArrayList<ILaunchConfigurationType> launchTypes = new ArrayList<ILaunchConfigurationType>(Arrays.asList(manager.getLaunchConfigurationTypes()));
 			
 			// comparator to order launch configuration types by name
 			Comparator<ILaunchConfigurationType> ltComparator = new Comparator<ILaunchConfigurationType>() {				
@@ -140,51 +94,46 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				}
 			};
 			
+			SelectLaunchersTreeContentProvider provider = new SelectLaunchersTreeContentProvider(
+					Activator.getDefault().getCurrentMode(), configuration.getType());
+			
+			// get filtered types to view in the tree
+			List<ILaunchConfigurationType> launchTypes = provider.getElements(); 
+			
 			// order types
 			Collections.sort(launchTypes, ltComparator);
 			
 			for (ILaunchConfigurationType configurationType : launchTypes) {
-				
-				String currentMode = Activator.getDefault().getCurrentMode();
-				
-				// filter types by Composite type, ability to launch with current launch mode and isPublic flag
-				if (configurationType != configuration.getType() && configurationType.supportsMode(currentMode) && 
-						configurationType.isPublic()) {
-					
-			        // get all launch configurations of specified type
-			        launchConfigurations = new ArrayList<ILaunchConfiguration>(Arrays.asList(manager.getLaunchConfigurations(configurationType)));
-			        
-			        // we will show only configuration types which contain configurations
-			        if (!launchConfigurations.isEmpty()) {
-			        
-						// view current type
-						TreeItem treeItem0 = new TreeItem(tree, 0);
-				        treeItem0.setText(configurationType.getName());
-				        
-		        		Image confTypeImage = DebugPluginImages.getImage(configurationType.getIdentifier());
-		        		
-		        		treeItem0.setImage(confTypeImage);
-				        
-				        // order configurations
-				        Collections.sort(launchConfigurations, lcComparator);
-				        
-						for (ILaunchConfiguration launchConf : launchConfigurations) {
-							
-							if (launchConf.getName() != configuration.getName()) {
-		
-								// view current configuration
-								TreeItem treeItem1 = new TreeItem(treeItem0, 0);
-						        treeItem1.setText(launchConf.getName());
-						        treeItem1.setImage(confTypeImage);
 						        
-						        treeItem1.setData(launchConf);
-							}
-						}	
-						
-						// expand node
-						treeItem0.setExpanded(true);
-			        }
-				}
+				// view current type
+				TreeItem treeItem0 = new TreeItem(tree, 0);
+		        treeItem0.setText(configurationType.getName());
+		        
+        		Image confTypeImage = DebugPluginImages.getImage(configurationType.getIdentifier());
+        		
+        		treeItem0.setImage(confTypeImage);
+        		
+        		// get all launch configurations of specified type
+        		List<ILaunchConfiguration> launchConfigurations = Arrays.asList(manager.getLaunchConfigurations(configurationType));
+		        
+		        // order configurations
+		        Collections.sort(launchConfigurations, lcComparator);
+		        
+				for (ILaunchConfiguration launchConf : launchConfigurations) {
+					
+					if (launchConf.getName() != configuration.getName()) {
+
+						// view current configuration
+						TreeItem treeItem1 = new TreeItem(treeItem0, 0);
+				        treeItem1.setText(launchConf.getName());
+				        treeItem1.setImage(confTypeImage);
+				        
+				        treeItem1.setData(launchConf);
+					}
+				}	
+				
+				// expand node
+				treeItem0.setExpanded(true);
 			}	
 		    
 		} catch (CoreException e) {
