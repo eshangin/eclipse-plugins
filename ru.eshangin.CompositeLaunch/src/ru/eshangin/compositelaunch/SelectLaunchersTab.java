@@ -7,22 +7,28 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
-
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 
+// TODO :: add commentes to the class and it's methods
+//
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
-	private Composite comp;
+	//private Composite comp;
 	private Button btnCheckButton;
-	private CheckboxTreeViewer checkboxTreeViewer;
+	private SelectLaunchersTreeView checkboxTreeViewer;
 	private Button btnSelectAll;
+	private ViewerFilter fOnlySelectedFilter;
+	private FormData fd_tree;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -32,7 +38,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		Font font = parent.getFont();		
 		
-		comp = new Composite(parent, SWT.NONE);
+		Composite comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
 		comp.setFont(font);
 		comp.setLayout(new FormLayout());
@@ -45,12 +51,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		btnSelectAll.setLayoutData(fd_btnSelectAll);
 		btnSelectAll.setText("Select all");
 		
-		btnCheckButton = new Button(comp, SWT.CHECK);
-		FormData fd_btnCheckButton = new FormData();
-		fd_btnCheckButton.bottom = new FormAttachment(100, -10);
-		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
-		btnCheckButton.setLayoutData(fd_btnCheckButton);
-		btnCheckButton.setText("Only show selected");
+		
 		
 		Button btnDeselectAll = new Button(comp, SWT.NONE);
 		FormData fd_btnDeselectAll = new FormData();
@@ -65,15 +66,48 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		System.out.println("createControl");		
 	}
 	
+	private void createTreeViewerFilters(Composite parent) {
+		btnCheckButton = new Button(parent, SWT.CHECK);
+		fd_tree.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
+		FormData fd_btnCheckButton = new FormData();
+		fd_btnCheckButton.bottom = new FormAttachment(100, -10);
+		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
+		btnCheckButton.setLayoutData(fd_btnCheckButton);
+		btnCheckButton.setText("Only show selected");
+		
+		fOnlySelectedFilter = new OnlySelectedViewerFilter(checkboxTreeViewer);
+		
+		btnCheckButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button button = (Button) e.widget;
+		        if (button.getSelection()) {
+		        	checkboxTreeViewer.addFilter(fOnlySelectedFilter);
+		        }
+		        else {
+		        	checkboxTreeViewer.removeFilter(fOnlySelectedFilter);
+		        }
+			}
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {
+				// do nothing				
+			}
+		});
+	}
+	
 	private void createTreeViewer(Composite parent) {
 		checkboxTreeViewer = new SelectLaunchersTreeView(parent, SWT.BORDER);
 		Tree tree_1 = checkboxTreeViewer.getTree();
-		FormData fd_tree_1 = new FormData();
-		fd_tree_1.right = new FormAttachment(btnSelectAll, -6);
-		fd_tree_1.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
-		fd_tree_1.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
-		fd_tree_1.left = new FormAttachment(0, 10);
-		tree_1.setLayoutData(fd_tree_1);
+		fd_tree = new FormData();
+		fd_tree.right = new FormAttachment(btnSelectAll, -6);
+		//fd_tree_1.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
+		fd_tree.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
+		fd_tree.left = new FormAttachment(0, 10);
+		tree_1.setLayoutData(fd_tree);
+		
+		createTreeViewerFilters(parent);
 	}
 
 	@Override

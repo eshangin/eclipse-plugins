@@ -12,6 +12,7 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeSelection;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
@@ -58,6 +59,20 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		});
 	}
 	
+	public boolean anyLaunchConfigurationSelected(ILaunchConfigurationType confType) {
+		Object[] configs = fContentProvider.getChildren(confType);
+		
+		boolean anySelected = false;
+		
+		for (Object config : configs) {
+			if (getChecked(config)) {
+				return true;
+			}
+		}
+		
+		return anySelected;
+	}
+
 	@Override
 	public void setContentProvider(IContentProvider provider) {
 		
