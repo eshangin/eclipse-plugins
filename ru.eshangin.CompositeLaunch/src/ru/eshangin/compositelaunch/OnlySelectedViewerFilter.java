@@ -10,15 +10,12 @@ import org.eclipse.jface.viewers.ViewerFilter;
  * and will show/hide nodes depending on current checked state of nodes
  */
 class OnlySelectedViewerFilter extends ViewerFilter {
-	
-	private SelectLaunchersTreeView fTreeView;
-	
-	public OnlySelectedViewerFilter(SelectLaunchersTreeView treeView) {
-		fTreeView = treeView;
-	}
 
 	@Override
 	public boolean select(Viewer viewer, Object parentElement, Object element) {
+		
+		SelectLaunchersTreeView fTreeView = (SelectLaunchersTreeView)viewer;
+		
 		if (element instanceof ILaunchConfiguration) {
 			// show/hide ILaunchConfiguration node depending on it's checked state
 			return fTreeView.getChecked(element);

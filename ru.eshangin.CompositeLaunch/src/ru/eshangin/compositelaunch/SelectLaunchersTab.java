@@ -12,6 +12,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
@@ -50,9 +52,20 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		fd_btnSelectAll.top = new FormAttachment(0, 5);
 		btnSelectAll.setLayoutData(fd_btnSelectAll);
 		btnSelectAll.setText("Select all");
-		
-		
-		
+		btnSelectAll.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+			        switch (e.type) {
+			        case SWT.Selection:
+			        	Object[] topElements = ((SelectLaunchersContentProvider) checkboxTreeViewer.getContentProvider()).getElements(
+			        			ResourcesPlugin.getWorkspace().getRoot());
+			        	for (Object element : topElements) {
+			        		checkboxTreeViewer.setSubtreeChecked(element, true);
+						}
+			        	break;
+		        	}
+		      }
+	    });
+			
 		Button btnDeselectAll = new Button(comp, SWT.NONE);
 		FormData fd_btnDeselectAll = new FormData();
 		fd_btnDeselectAll.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
@@ -60,6 +73,19 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		fd_btnDeselectAll.top = new FormAttachment(btnSelectAll, 6);
 		btnDeselectAll.setLayoutData(fd_btnDeselectAll);
 		btnDeselectAll.setText("Deselect all");
+		btnDeselectAll.addListener(SWT.Selection, new Listener() {
+		      public void handleEvent(Event e) {
+			        switch (e.type) {
+			        case SWT.Selection:
+			        	Object[] topElements = ((SelectLaunchersContentProvider) checkboxTreeViewer.getContentProvider()).getElements(
+			        			ResourcesPlugin.getWorkspace().getRoot());
+			        	for (Object element : topElements) {
+			        		checkboxTreeViewer.setSubtreeChecked(element, false);
+						}
+			        	break;
+		        	}
+		      }
+	    });		
 		
 		createTreeViewer(comp);
 		
@@ -75,7 +101,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		btnCheckButton.setLayoutData(fd_btnCheckButton);
 		btnCheckButton.setText("Only show selected");
 		
-		fOnlySelectedFilter = new OnlySelectedViewerFilter(checkboxTreeViewer);
+		fOnlySelectedFilter = new OnlySelectedViewerFilter();
 		
 		btnCheckButton.addSelectionListener(new SelectionListener() {
 			
@@ -87,6 +113,19 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		        }
 		        else {
 		        	checkboxTreeViewer.removeFilter(fOnlySelectedFilter);
+		        	checkboxTreeViewer.expandAll();
+		        	
+		        	// By some reason system removes checked state from
+		        	// child elements of parent elements which were collapsed.
+		        	// We need restore child states.
+		        	Object[] topElements = ((SelectLaunchersContentProvider) checkboxTreeViewer.getContentProvider()).getElements(
+		        			ResourcesPlugin.getWorkspace().getRoot());
+		        	for (Object element : topElements) {
+		        		if (checkboxTreeViewer.getChecked(element)) {
+		        			checkboxTreeViewer.setSubtreeChecked(element, true);
+		        		}
+					}
+		        	
 		        }
 			}
 
@@ -102,7 +141,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		Tree tree_1 = checkboxTreeViewer.getTree();
 		fd_tree = new FormData();
 		fd_tree.right = new FormAttachment(btnSelectAll, -6);
-		//fd_tree_1.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
 		fd_tree.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
 		fd_tree.left = new FormAttachment(0, 10);
 		tree_1.setLayoutData(fd_tree);

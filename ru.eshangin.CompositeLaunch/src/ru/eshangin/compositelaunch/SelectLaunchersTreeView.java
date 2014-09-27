@@ -18,7 +18,7 @@ import org.eclipse.ui.PlatformUI;
 
 class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	
-	SelectLaunchersContentProvider fContentProvider;
+	private SelectLaunchersContentProvider fContentProvider;
 
 	public SelectLaunchersTreeView(Composite parent, int style) {
 		super(parent, style);
@@ -122,7 +122,7 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	}
 	
 	private void checkBranchItems(Object element, boolean isChecked) {
-
+		
 		// get parent of checked element
 		Object parentOfChecked = fContentProvider.getParent(element);
 		if (parentOfChecked instanceof ILaunchConfigurationType) {
