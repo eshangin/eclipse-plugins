@@ -1,59 +1,79 @@
 package ru.eshangin.compositelaunch;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.internal.ui.DebugPluginImages;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeItem;
 
-@SuppressWarnings("restriction")
+import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.jface.viewers.CheckboxTreeViewer;
+
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
-	private Tree tree;
+	private Composite comp;
+	private Button btnCheckButton;
+	private CheckboxTreeViewer checkboxTreeViewer;
+	private Button btnSelectAll;
 	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	@Override
 	public void createControl(Composite parent) {
-		//Font font = parent.getFont();		
 		
-		Composite comp = new Composite(parent, SWT.NONE);
+		Font font = parent.getFont();		
 		
-		tree = new Tree(comp, SWT.CHECK | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-	    tree.setSize(290, 290);
-	    
-	    tree.addListener(SWT.Selection, new Listener() {
-	        public void handleEvent(Event event) {
-	          if (event.detail == SWT.CHECK) {
-	        	  System.out.println("c");
-	        	  TreeItem item = (TreeItem)event.item;
-	        	  
-	        	  // add selected configuration into array of Selected Configurations which will be used
-	        	  // if user will launch this configuration.
-	        	  Activator.getDefault().addConfigurationToLaunch((ILaunchConfiguration)item.getData());
-	          } else {
-	        	  System.out.println("u");
-	          }
-	        }
-	      });
-		
+		comp = new Composite(parent, SWT.NONE);
 		setControl(comp);
+		comp.setFont(font);
+		comp.setLayout(new FormLayout());
+		
+		btnSelectAll = new Button(comp, SWT.NONE);
+		FormData fd_btnSelectAll = new FormData();
+		fd_btnSelectAll.left = new FormAttachment(100, -133);
+		fd_btnSelectAll.right = new FormAttachment(100, -10);
+		fd_btnSelectAll.top = new FormAttachment(0, 5);
+		btnSelectAll.setLayoutData(fd_btnSelectAll);
+		btnSelectAll.setText("Select all");
+		
+		btnCheckButton = new Button(comp, SWT.CHECK);
+		FormData fd_btnCheckButton = new FormData();
+		fd_btnCheckButton.bottom = new FormAttachment(100, -10);
+		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
+		btnCheckButton.setLayoutData(fd_btnCheckButton);
+		btnCheckButton.setText("Only show selected");
+		
+		Button btnDeselectAll = new Button(comp, SWT.NONE);
+		FormData fd_btnDeselectAll = new FormData();
+		fd_btnDeselectAll.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
+		fd_btnDeselectAll.right = new FormAttachment(100, -10);
+		fd_btnDeselectAll.top = new FormAttachment(btnSelectAll, 6);
+		btnDeselectAll.setLayoutData(fd_btnDeselectAll);
+		btnDeselectAll.setText("Deselect all");
+		
+		createTreeViewer(comp);
 		
 		System.out.println("createControl");		
+	}
+	
+	private void createTreeViewer(Composite parent) {
+		checkboxTreeViewer = new SelectLaunchersTreeView(parent, SWT.BORDER);
+		Tree tree_1 = checkboxTreeViewer.getTree();
+		FormData fd_tree_1 = new FormData();
+		fd_tree_1.right = new FormAttachment(btnSelectAll, -6);
+		fd_tree_1.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
+		fd_tree_1.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
+		fd_tree_1.left = new FormAttachment(0, 10);
+		tree_1.setLayoutData(fd_tree_1);
 	}
 
 	@Override
@@ -68,73 +88,17 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		System.out.println("initializeFrom");
 		
 		// remove all tree nodes created before
-		tree.removeAll();
+		//tree.removeAll();
 		
 		// clear selected configurations
 		Activator.getDefault().clearLaunchConfigurations();
 		
-		// get launch manager
-		final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
-		
 		try {
 			
-			// comparator to order launch configuration types by name
-			Comparator<ILaunchConfigurationType> ltComparator = new Comparator<ILaunchConfigurationType>() {				
-				@Override
-				public int compare(ILaunchConfigurationType arg0, ILaunchConfigurationType arg1) {
-					return arg0.getName().compareTo(arg1.getName());
-				}
-			};
-			
-			// comparator to order launch configurations by name
-			Comparator<ILaunchConfiguration> lcComparator = new Comparator<ILaunchConfiguration>() {				
-				@Override
-				public int compare(ILaunchConfiguration arg0, ILaunchConfiguration arg1) {
-					return arg0.getName().compareTo(arg1.getName());
-				}
-			};
-			
-			SelectLaunchersTreeContentProvider provider = new SelectLaunchersTreeContentProvider(
-					Activator.getDefault().getCurrentMode(), configuration.getType());
-			
-			// get filtered types to view in the tree
-			List<ILaunchConfigurationType> launchTypes = provider.getElements(); 
-			
-			// order types
-			Collections.sort(launchTypes, ltComparator);
-			
-			for (ILaunchConfigurationType configurationType : launchTypes) {
-						        
-				// view current type
-				TreeItem treeItem0 = new TreeItem(tree, 0);
-		        treeItem0.setText(configurationType.getName());
-		        
-        		Image confTypeImage = DebugPluginImages.getImage(configurationType.getIdentifier());
-        		
-        		treeItem0.setImage(confTypeImage);
-        		
-        		// get all launch configurations of specified type
-        		List<ILaunchConfiguration> launchConfigurations = Arrays.asList(manager.getLaunchConfigurations(configurationType));
-		        
-		        // order configurations
-		        Collections.sort(launchConfigurations, lcComparator);
-		        
-				for (ILaunchConfiguration launchConf : launchConfigurations) {
-					
-					if (launchConf.getName() != configuration.getName()) {
-
-						// view current configuration
-						TreeItem treeItem1 = new TreeItem(treeItem0, 0);
-				        treeItem1.setText(launchConf.getName());
-				        treeItem1.setImage(confTypeImage);
-				        
-				        treeItem1.setData(launchConf);
-					}
-				}	
-				
-				// expand node
-				treeItem0.setExpanded(true);
-			}	
+			checkboxTreeViewer.setContentProvider(new SelectLaunchersContentProvider(
+					Activator.getDefault().getCurrentMode(), configuration.getType()));
+			checkboxTreeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+			checkboxTreeViewer.expandAll();	
 		    
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -154,5 +118,4 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	public String getName() {
 		return "Select Launchers";
 	}
-
 }

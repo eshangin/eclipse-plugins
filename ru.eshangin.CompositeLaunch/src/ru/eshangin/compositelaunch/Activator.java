@@ -77,6 +77,10 @@ public class Activator extends AbstractUIPlugin {
 	public void addConfigurationToLaunch(ILaunchConfiguration configuration) {
 		selectedConfigurations.add(configuration);
 	}
+	
+	public void removeConfigurationToLaunch(ILaunchConfiguration configuration) {
+		selectedConfigurations.remove(configuration);
+	}
 
 	public void clearLaunchConfigurations() {
 		selectedConfigurations.clear();;
