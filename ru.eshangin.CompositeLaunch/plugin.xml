@@ -23,7 +23,8 @@
 	  <launchConfigurationTabGroup
 	      id="ru.eshangin.CompositeLaunchTabGroup"
 	      type="ru.eshangin.CompositeLaunch"
-	      class="ru.eshangin.compositelaunch.CompositeLaunchConfigurationTabGroup">
+	      class="ru.eshangin.compositelaunch.CompositeLaunchConfigurationTabGroup"
+	      description="Create configuration that will launch another configurations in composite.">
 	  </launchConfigurationTabGroup>
 	 </extension>	 
 	 

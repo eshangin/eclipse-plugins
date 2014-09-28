@@ -14,7 +14,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 		
 		System.out.println("Configurations to launch:");
 		
-		for (ILaunchConfiguration conf : Activator.getDefault().getSelectedConfigurations()) {
+		for (ILaunchConfiguration conf : CompositeConfigurationManager.getSelectedConfigurations()) {
 			
 			System.out.println(conf.getName());
 			

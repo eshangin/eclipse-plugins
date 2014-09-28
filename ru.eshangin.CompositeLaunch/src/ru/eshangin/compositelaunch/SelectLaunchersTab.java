@@ -18,8 +18,12 @@ import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.jface.viewers.CheckboxTreeViewer;
+import org.eclipse.jface.viewers.CheckStateChangedEvent;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.ICheckStateListener;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.swt.widgets.Label;
 
 // TODO :: add commentes to the class and it's methods
 //
@@ -31,6 +35,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private Button btnSelectAll;
 	private ViewerFilter fOnlySelectedFilter;
 	private FormData fd_tree;
+	private Tree tree;
+	private FormData fd_btnCheckButton;
+	private FormData fd_btnSelectAll;
+	private FormData fd_btnDeselectAll;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -45,10 +53,32 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		comp.setFont(font);
 		comp.setLayout(new FormLayout());
 		
-		btnSelectAll = new Button(comp, SWT.NONE);
-		FormData fd_btnSelectAll = new FormData();
-		fd_btnSelectAll.left = new FormAttachment(100, -133);
-		fd_btnSelectAll.right = new FormAttachment(100, -10);
+		createSelectAllButton(comp);
+			
+		createDeselectAllButton(comp);
+		
+		createTreeViewer(comp);
+		
+		createTotalSelectedLabel(comp);
+		
+		System.out.println("createControl");		
+	}
+	
+	private void createTotalSelectedLabel(Composite parent) {
+		Label lblXOf = new Label(parent, SWT.NONE);
+		fd_btnSelectAll.right = new FormAttachment(lblXOf, 0, SWT.RIGHT);
+		fd_btnCheckButton.bottom = new FormAttachment(lblXOf, -6);
+		fd_tree.right = new FormAttachment(lblXOf, -6);
+		FormData fd_lblXOf = new FormData();
+		fd_lblXOf.right = new FormAttachment(100, -10);
+		fd_lblXOf.bottom = new FormAttachment(100, -10);
+		lblXOf.setLayoutData(fd_lblXOf);
+		lblXOf.setText("1000 out of 1000 selected");
+	}
+	
+	private void createSelectAllButton(Composite parent) {
+		btnSelectAll = new Button(parent, SWT.NONE);
+		fd_btnSelectAll = new FormData();
 		fd_btnSelectAll.top = new FormAttachment(0, 5);
 		btnSelectAll.setLayoutData(fd_btnSelectAll);
 		btnSelectAll.setText("Select all");
@@ -61,15 +91,19 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			        	for (Object element : topElements) {
 			        		checkboxTreeViewer.setSubtreeChecked(element, true);
 						}
+			        	
+			        	// update dialog message and buttons
+			        	updateLaunchConfigurationDialog();
 			        	break;
 		        	}
 		      }
 	    });
-			
-		Button btnDeselectAll = new Button(comp, SWT.NONE);
-		FormData fd_btnDeselectAll = new FormData();
-		fd_btnDeselectAll.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
-		fd_btnDeselectAll.right = new FormAttachment(100, -10);
+	}
+	
+	private void createDeselectAllButton(Composite parent) {
+		Button btnDeselectAll = new Button(parent, SWT.NONE);
+		fd_btnDeselectAll = new FormData();
+		fd_btnDeselectAll.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
 		fd_btnDeselectAll.top = new FormAttachment(btnSelectAll, 6);
 		btnDeselectAll.setLayoutData(fd_btnDeselectAll);
 		btnDeselectAll.setText("Deselect all");
@@ -82,22 +116,19 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			        	for (Object element : topElements) {
 			        		checkboxTreeViewer.setSubtreeChecked(element, false);
 						}
+			        	
+			        	// update dialog message and buttons
+			        	updateLaunchConfigurationDialog();
 			        	break;
 		        	}
 		      }
 	    });		
-		
-		createTreeViewer(comp);
-		
-		System.out.println("createControl");		
 	}
 	
 	private void createTreeViewerFilters(Composite parent) {
 		btnCheckButton = new Button(parent, SWT.CHECK);
-		fd_tree.bottom = new FormAttachment(btnCheckButton, 0, SWT.BOTTOM);
-		FormData fd_btnCheckButton = new FormData();
-		fd_btnCheckButton.bottom = new FormAttachment(100, -10);
-		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
+		fd_btnCheckButton = new FormData();
+		fd_btnCheckButton.left = new FormAttachment(tree, 6);
 		btnCheckButton.setLayoutData(fd_btnCheckButton);
 		btnCheckButton.setText("Only show selected");
 		
@@ -138,13 +169,32 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createTreeViewer(Composite parent) {
 		checkboxTreeViewer = new SelectLaunchersTreeView(parent, SWT.BORDER);
-		Tree tree_1 = checkboxTreeViewer.getTree();
+		tree = checkboxTreeViewer.getTree();
+		fd_btnDeselectAll.left = new FormAttachment(tree, 6);
+		fd_btnSelectAll.left = new FormAttachment(tree, 6);
 		fd_tree = new FormData();
-		fd_tree.right = new FormAttachment(btnSelectAll, -6);
-		fd_tree.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
+		fd_tree.top = new FormAttachment(0, 5);
 		fd_tree.left = new FormAttachment(0, 10);
-		tree_1.setLayoutData(fd_tree);
+		fd_tree.bottom = new FormAttachment(100, -10);
+		tree.setLayoutData(fd_tree);
 		
+		// update dialog buttons and message when some configurations
+		// will be checked/unchecked
+		checkboxTreeViewer.addCheckStateListener(new ICheckStateListener() {			
+			@Override
+			public void checkStateChanged(CheckStateChangedEvent event) {
+				updateLaunchConfigurationDialog();
+			}
+		});
+		checkboxTreeViewer.addDoubleClickListener(new IDoubleClickListener() {
+			
+			@Override
+			public void doubleClick(DoubleClickEvent event) {
+				updateLaunchConfigurationDialog();				
+			}
+		});
+		
+		// create viewer filters
 		createTreeViewerFilters(parent);
 	}
 
@@ -163,7 +213,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		//tree.removeAll();
 		
 		// clear selected configurations
-		Activator.getDefault().clearLaunchConfigurations();
+		CompositeConfigurationManager.clearLaunchConfigurations();
 		
 		try {
 			
@@ -189,5 +239,22 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	@Override
 	public String getName() {
 		return "Select Launchers";
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
+	 */
+	@Override
+	public boolean isValid(ILaunchConfiguration launchConfig) {		
+		
+		setErrorMessage(null);
+		
+		// check if any launch configuration were selected
+		if (checkboxTreeViewer.getCheckedElements().length == 0) {
+			setErrorMessage("No any launch configuration slected");
+			return false;
+		}
+		
+		return true;
 	}
 }

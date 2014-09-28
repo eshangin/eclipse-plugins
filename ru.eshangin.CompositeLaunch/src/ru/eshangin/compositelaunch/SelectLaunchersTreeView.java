@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
@@ -113,11 +112,11 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	private void saveCompositeLaunchItem(ILaunchConfiguration configuration, boolean add) {
 		if (add) {
 			// add configuration to launch in composite
-			Activator.getDefault().addConfigurationToLaunch(configuration);
+			CompositeConfigurationManager.addConfigurationToLaunch(configuration);
 		}
 		else {
 			// remove configuration to launch in composite
-			Activator.getDefault().removeConfigurationToLaunch(configuration);
+			CompositeConfigurationManager.removeConfigurationToLaunch(configuration);
 		}
 	}
 	
