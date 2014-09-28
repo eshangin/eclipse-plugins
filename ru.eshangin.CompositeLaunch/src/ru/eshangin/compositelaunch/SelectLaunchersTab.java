@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
@@ -41,6 +42,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private FormData fd_btnSelectAll;
 	private FormData fd_btnDeselectAll;
 	private String fDefaultSerializedConfigs;
+	private Label fLblXOf;
+	private Button btnDeselectAll;
 
 	
 	/**
@@ -68,20 +71,21 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTotalSelectedLabel(Composite parent) {
-		Label lblXOf = new Label(parent, SWT.NONE);
-		fd_btnSelectAll.right = new FormAttachment(lblXOf, 0, SWT.RIGHT);
-		fd_btnCheckButton.bottom = new FormAttachment(lblXOf, -6);
-		fd_tree.right = new FormAttachment(lblXOf, -6);
+		fLblXOf = new Label(parent, SWT.NONE);
+		fd_btnCheckButton.top = new FormAttachment(fLblXOf, -20, SWT.TOP);
+		fd_btnCheckButton.bottom = new FormAttachment(fLblXOf, -1);
 		FormData fd_lblXOf = new FormData();
-		fd_lblXOf.right = new FormAttachment(100, -10);
-		fd_lblXOf.bottom = new FormAttachment(100, -10);
-		lblXOf.setLayoutData(fd_lblXOf);
-		lblXOf.setText("1000 out of 1000 selected");
+		fd_lblXOf.bottom = new FormAttachment(tree, 0, SWT.BOTTOM);
+		fd_lblXOf.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
+		fLblXOf.setLayoutData(fd_lblXOf);
+		fLblXOf.setText("0 out of 0 selected");
 	}
 	
 	private void createSelectAllButton(Composite parent) {
 		btnSelectAll = new Button(parent, SWT.NONE);
 		fd_btnSelectAll = new FormData();
+		fd_btnSelectAll.left = new FormAttachment(100, -134);
+		fd_btnSelectAll.right = new FormAttachment(100, -10);
 		fd_btnSelectAll.top = new FormAttachment(0, 5);
 		btnSelectAll.setLayoutData(fd_btnSelectAll);
 		btnSelectAll.setText("Select all");
@@ -104,10 +108,11 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createDeselectAllButton(Composite parent) {
-		Button btnDeselectAll = new Button(parent, SWT.NONE);
+		btnDeselectAll = new Button(parent, SWT.NONE);
 		fd_btnDeselectAll = new FormData();
-		fd_btnDeselectAll.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
 		fd_btnDeselectAll.top = new FormAttachment(btnSelectAll, 6);
+		fd_btnDeselectAll.left = new FormAttachment(100, -134);
+		fd_btnDeselectAll.right = new FormAttachment(100, -10);
 		btnDeselectAll.setLayoutData(fd_btnDeselectAll);
 		btnDeselectAll.setText("Deselect all");
 		btnDeselectAll.addListener(SWT.Selection, new Listener() {
@@ -131,7 +136,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private void createTreeViewerFilters(Composite parent) {
 		btnCheckButton = new Button(parent, SWT.CHECK);
 		fd_btnCheckButton = new FormData();
-		fd_btnCheckButton.left = new FormAttachment(tree, 6);
+		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
+		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
 		btnCheckButton.setLayoutData(fd_btnCheckButton);
 		btnCheckButton.setText("Only show selected");
 		
@@ -173,11 +179,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private void createTreeViewer(Composite parent) {
 		checkboxTreeViewer = new SelectLaunchersTreeView(parent, SWT.BORDER);
 		tree = checkboxTreeViewer.getTree();
-		fd_btnDeselectAll.left = new FormAttachment(tree, 6);
-		fd_btnSelectAll.left = new FormAttachment(tree, 6);
 		fd_tree = new FormData();
-		fd_tree.top = new FormAttachment(0, 5);
+		fd_tree.right = new FormAttachment(100, -140);
 		fd_tree.left = new FormAttachment(0, 10);
+		fd_tree.top = new FormAttachment(0, 5);
 		fd_tree.bottom = new FormAttachment(100, -10);
 		tree.setLayoutData(fd_tree);
 		
@@ -247,7 +252,20 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		System.out.println("performApply");
 		
+		int totalLauchConfsCount = 0;
+		int totalSelectedConfigs = 0;
+		
 		// get all currently selected configurations from tree view
+		TreeItem[] treeItems = checkboxTreeViewer.getTree().getItems();
+		for (TreeItem confTypeItem : treeItems) {
+			for (TreeItem confItem : confTypeItem.getItems()) {
+				if (confItem.getChecked()) {
+					totalSelectedConfigs++;
+				}
+			}
+			totalLauchConfsCount += confTypeItem.getItemCount();
+		}
+		
 		Object[] checkedElements = checkboxTreeViewer.getCheckedElements();
 		
 		ArrayList<CompositeConfigurationItem> confItems = new ArrayList<CompositeConfigurationItem>();
@@ -257,6 +275,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				confItems.add(new CompositeConfigurationItem((ILaunchConfiguration)element));
 			}
 		}
+		
+		fLblXOf.setText(totalSelectedConfigs + " out of " + totalLauchConfsCount + " selected");
 		
 		String newConfListAttrValue = JsonConfigurationHelper.toJson(confItems);
 				
