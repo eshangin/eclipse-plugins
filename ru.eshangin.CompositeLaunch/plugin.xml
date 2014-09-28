@@ -15,7 +15,7 @@
 	  <launchConfigurationTypeImage
 	     id="ru.eshangin.CompositeLaunchConfigurationTypeImage"
 	     configTypeID="ru.eshangin.CompositeLaunch"
-	     icon="icons/sample.gif">
+	     icon="icons/composite.png">
 	  </launchConfigurationTypeImage>
 	 </extension>	 
 	 
