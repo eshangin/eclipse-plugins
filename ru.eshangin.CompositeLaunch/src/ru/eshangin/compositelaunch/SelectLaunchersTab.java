@@ -1,5 +1,7 @@
 package ru.eshangin.compositelaunch;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
@@ -210,12 +212,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		System.out.println("initializeFrom");
 
 		try {
-			// Restore list of selected launch configs from composite config attributes
-			String serializedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
-			
-			CompositeConfigurationManager.deserializeSelectedLaunchConfigurations(serializedConfigs);
-			
-			fDefaultSerializedConfigs = CompositeConfigurationManager.getSerializedSelectedConfigurations();
+			// Init list of selected launch configs from composite config attributes
+			fDefaultSerializedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
 			
 		} catch (CoreException e1) {
 			// TODO Auto-generated catch block
@@ -230,8 +228,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			checkboxTreeViewer.expandAll();
 			
 			// set default checked items
-			for (ILaunchConfiguration config : CompositeConfigurationManager.getSelectedConfigurations()) {
-				checkboxTreeViewer.setChecked(config, true);
+			for (CompositeConfigurationItem configItem : JsonConfigurationHelper.fromJson(fDefaultSerializedConfigs)) {
+				checkboxTreeViewer.setChecked(configItem.toLaunchConfiguration(), true);
 			}
 		    
 		} catch (CoreException e) {
@@ -247,11 +245,22 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		System.out.println("performApply");
 		
-		String newConfListAttrValue = CompositeConfigurationManager.getSerializedSelectedConfigurations();
+		// get all currently selected configurations from tree view
+		Object[] checkedElements = checkboxTreeViewer.getCheckedElements();
+		
+		ArrayList<CompositeConfigurationItem> confItems = new ArrayList<CompositeConfigurationItem>();
+		
+		for (Object element : checkedElements) {
+			if (element instanceof ILaunchConfiguration) {
+				confItems.add(new CompositeConfigurationItem((ILaunchConfiguration)element));
+			}
+		}
+		
+		String newConfListAttrValue = JsonConfigurationHelper.toJson(confItems);
 				
 		try {
 			// get currently saved list of configurations in launch config attributes
-			String currentSavedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, fDefaultSerializedConfigs);
+			String currentSavedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
 			
 			// check that selected config list were changed
 			if (!currentSavedConfigs.equals(newConfListAttrValue)) {

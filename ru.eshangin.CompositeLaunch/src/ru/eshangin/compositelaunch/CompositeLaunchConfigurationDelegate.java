@@ -1,5 +1,7 @@
 package ru.eshangin.compositelaunch;
 
+import java.util.ArrayList;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
@@ -12,14 +14,16 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		
+		ArrayList<CompositeConfigurationItem> deserizliedConfigs = JsonConfigurationHelper.fromJson(
+				configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, ""));
+		
 		System.out.println("Configurations to launch:");
 		
-		for (ILaunchConfiguration conf : CompositeConfigurationManager.getSelectedConfigurations()) {
+		for (CompositeConfigurationItem conf : deserizliedConfigs) {
 			
-			System.out.println(conf.getName());
+			System.out.println(conf.getfLaunchConfigurationName());
 			
-			conf.launch(mode, monitor);
-			
+			conf.toLaunchConfiguration().launch(mode, monitor);
 		}		
 	}
 

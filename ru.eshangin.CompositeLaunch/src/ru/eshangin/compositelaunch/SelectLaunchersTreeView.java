@@ -1,7 +1,6 @@
 package ru.eshangin.compositelaunch;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -32,14 +31,7 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		addCheckStateListener(new ICheckStateListener() {
 			
 			@Override
-			public void checkStateChanged(CheckStateChangedEvent event) {
-				
-				// add/remove selected configuration into/from list of Selected Configurations which will be used
-			  	// if user will launch this configuration.
-				if (event.getElement() instanceof ILaunchConfiguration) {
-					saveCompositeLaunchItem((ILaunchConfiguration)event.getElement(), event.getChecked());
-				}
-				
+			public void checkStateChanged(CheckStateChangedEvent event) {				
 				checkBranchItems(event.getElement(), event.getChecked());				
 			}
 		});
@@ -83,41 +75,6 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		}
 		
 		super.setContentProvider(provider);
-	}
-	
-	@Override
-	public boolean setChecked(Object element, boolean state) {
-		// add/remove selected configuration into/from list of Selected Configurations which will be used
-	  	// if user will launch this configuration.
-		if (element instanceof ILaunchConfiguration) {
-			saveCompositeLaunchItem((ILaunchConfiguration)element, state);
-		}
-		
-		return super.setChecked(element, state);
-	}
-	
-	@Override
-	public boolean setSubtreeChecked(Object element, boolean state) {
-		
-		if (element instanceof ILaunchConfigurationType) {
-			Object[] childConfigurations = fContentProvider.getChildren(element);
-			for (Object config : childConfigurations) {
-				saveCompositeLaunchItem((ILaunchConfiguration)config, state);
-			}
-		}
-		
-		return super.setSubtreeChecked(element, state);
-	}
-	
-	private void saveCompositeLaunchItem(ILaunchConfiguration configuration, boolean add) {
-		if (add) {
-			// add configuration to launch in composite
-			CompositeConfigurationManager.addConfigurationToLaunch(configuration);
-		}
-		else {
-			// remove configuration to launch in composite
-			CompositeConfigurationManager.removeConfigurationToLaunch(configuration);
-		}
 	}
 	
 	private void checkBranchItems(Object element, boolean isChecked) {
