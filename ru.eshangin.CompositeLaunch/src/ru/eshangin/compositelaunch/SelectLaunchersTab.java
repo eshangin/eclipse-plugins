@@ -183,7 +183,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		// update dialog buttons and message when some configurations
 		// will be checked/unchecked
-		checkboxTreeViewer.addCheckStateListener(new ICheckStateListener() {			
+		checkboxTreeViewer.addCheckStateListener(new ICheckStateListener() {	
+			
 			@Override
 			public void checkStateChanged(CheckStateChangedEvent event) {
 				updateLaunchConfigurationDialog();
@@ -226,8 +227,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 					Activator.getDefault().getCurrentMode(), configuration.getType()));
 			checkboxTreeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 			checkboxTreeViewer.expandAll();
-			
+
 			// set default checked items
+			checkboxTreeViewer.setCheckedElements(new Object[0]);
 			for (CompositeConfigurationItem configItem : JsonConfigurationHelper.fromJson(fDefaultSerializedConfigs)) {
 				checkboxTreeViewer.setChecked(configItem.toLaunchConfiguration(), true);
 			}

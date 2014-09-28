@@ -45,7 +45,6 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 				Object clickedElement = selection.getFirstElement();
 				boolean newState = !getChecked(clickedElement);
 				setChecked(clickedElement, newState);
-				checkBranchItems(clickedElement, newState);
 			}
 		});
 	}
@@ -62,6 +61,18 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		}
 		
 		return anySelected;
+	}
+	
+	@Override
+	public boolean setChecked(Object element, boolean state) {
+		
+		boolean canCheck = super.setChecked(element, state);
+		
+		if (canCheck) {
+			checkBranchItems(element, state);
+		}
+		
+		return canCheck;
 	}
 
 	@Override
@@ -83,6 +94,7 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		Object parentOfChecked = fContentProvider.getParent(element);
 		if (parentOfChecked instanceof ILaunchConfigurationType) {
 			if (isChecked) {
+				
 				// check if all children are checked or unchecked
 				Object[] confTypeChildrens = fContentProvider.getChildren(parentOfChecked);
 				boolean allChecked = true;
