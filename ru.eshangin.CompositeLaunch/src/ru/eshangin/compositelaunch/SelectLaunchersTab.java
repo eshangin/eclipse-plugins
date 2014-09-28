@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Label;
 //
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
-	//private Composite comp;
 	private Button btnCheckButton;
 	private SelectLaunchersTreeView checkboxTreeViewer;
 	private Button btnSelectAll;
@@ -39,6 +38,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private FormData fd_btnCheckButton;
 	private FormData fd_btnSelectAll;
 	private FormData fd_btnDeselectAll;
+	private String fDefaultSerializedConfigs;
+
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -199,28 +200,39 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 
 	@Override
-	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Auto-generated method stub
-		System.out.println("setDefaults");
+	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {		
+		// do nothing because there is no need to set defaults for newly created configuration
 	}
 	
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		
 		System.out.println("initializeFrom");
-		
-		// remove all tree nodes created before
-		//tree.removeAll();
-		
-		// clear selected configurations
-		CompositeConfigurationManager.clearLaunchConfigurations();
+
+		try {
+			// Restore list of selected launch configs from composite config attributes
+			String serializedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
+			
+			CompositeConfigurationManager.deserializeSelectedLaunchConfigurations(serializedConfigs);
+			
+			fDefaultSerializedConfigs = CompositeConfigurationManager.getSerializedSelectedConfigurations();
+			
+		} catch (CoreException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		try {
 			
 			checkboxTreeViewer.setContentProvider(new SelectLaunchersContentProvider(
 					Activator.getDefault().getCurrentMode(), configuration.getType()));
 			checkboxTreeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
-			checkboxTreeViewer.expandAll();	
+			checkboxTreeViewer.expandAll();
+			
+			// set default checked items
+			for (ILaunchConfiguration config : CompositeConfigurationManager.getSelectedConfigurations()) {
+				checkboxTreeViewer.setChecked(config, true);
+			}
 		    
 		} catch (CoreException e) {
 			e.printStackTrace();
@@ -232,14 +244,29 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		// TODO Auto-generated method stub
 		
+		System.out.println("performApply");
+		
+		String newConfListAttrValue = CompositeConfigurationManager.getSerializedSelectedConfigurations();
+				
+		try {
+			// get currently saved list of configurations in launch config attributes
+			String currentSavedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, fDefaultSerializedConfigs);
+			
+			// check that selected config list were changed
+			if (!currentSavedConfigs.equals(newConfListAttrValue)) {
+				configuration.setAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, newConfListAttrValue);
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public String getName() {
 		return "Select Launchers";
-	}
+	}	
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#isValid(org.eclipse.debug.core.ILaunchConfiguration)
