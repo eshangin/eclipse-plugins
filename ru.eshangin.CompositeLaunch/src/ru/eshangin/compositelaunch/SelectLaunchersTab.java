@@ -14,7 +14,9 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -25,8 +27,11 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.dialogs.FilteredTree;
+import org.eclipse.ui.dialogs.PatternFilter;
 
 // TODO :: add commentes to the class and it's methods
 //
@@ -36,7 +41,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private SelectLaunchersTreeView checkboxTreeViewer;
 	private Button btnSelectAll;
 	private ViewerFilter fOnlySelectedFilter;
-	private FormData fd_tree;
+	private FormData fd_filteredTree;
 	private Tree tree;
 	private FormData fd_btnCheckButton;
 	private FormData fd_btnSelectAll;
@@ -44,6 +49,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private String fDefaultSerializedConfigs;
 	private Label fLblXOf;
 	private Button btnDeselectAll;
+	private FilteredSelectLaunchersTreeView filteredTree;
 
 	
 	/**
@@ -72,10 +78,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createTotalSelectedLabel(Composite parent) {
 		fLblXOf = new Label(parent, SWT.NONE);
-		fd_btnCheckButton.top = new FormAttachment(fLblXOf, -20, SWT.TOP);
-		fd_btnCheckButton.bottom = new FormAttachment(fLblXOf, -1);
+		fd_btnCheckButton.top = new FormAttachment(fLblXOf, -25, SWT.TOP);
+		fd_btnCheckButton.bottom = new FormAttachment(fLblXOf, -6);
 		FormData fd_lblXOf = new FormData();
-		fd_lblXOf.bottom = new FormAttachment(tree, 0, SWT.BOTTOM);
+		fd_lblXOf.bottom = new FormAttachment(filteredTree, 0, SWT.BOTTOM);
 		fd_lblXOf.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
 		fLblXOf.setLayoutData(fd_lblXOf);
 		fLblXOf.setText("0 out of 0 selected");
@@ -136,8 +142,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private void createTreeViewerFilters(Composite parent) {
 		btnCheckButton = new Button(parent, SWT.CHECK);
 		fd_btnCheckButton = new FormData();
+		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, -124);
 		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
-		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
 		btnCheckButton.setLayoutData(fd_btnCheckButton);
 		btnCheckButton.setText("Only show selected");
 		
@@ -177,14 +183,17 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTreeViewer(Composite parent) {
-		checkboxTreeViewer = new SelectLaunchersTreeView(parent, SWT.BORDER);
-		tree = checkboxTreeViewer.getTree();
-		fd_tree = new FormData();
-		fd_tree.right = new FormAttachment(100, -140);
-		fd_tree.left = new FormAttachment(0, 10);
-		fd_tree.top = new FormAttachment(0, 5);
-		fd_tree.bottom = new FormAttachment(100, -10);
-		tree.setLayoutData(fd_tree);
+		PatternFilter filter = new PatternFilter();
+		
+		filteredTree = new FilteredSelectLaunchersTreeView(parent, SWT.BORDER, filter);
+		
+		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
+		fd_filteredTree = new FormData();
+		fd_filteredTree.right = new FormAttachment(100, -140);
+		fd_filteredTree.left = new FormAttachment(0, 10);
+		fd_filteredTree.top = new FormAttachment(0, 5);
+		fd_filteredTree.bottom = new FormAttachment(100, -10);
+		filteredTree.setLayoutData(fd_filteredTree);
 		
 		// update dialog buttons and message when some configurations
 		// will be checked/unchecked
