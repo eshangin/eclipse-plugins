@@ -11,12 +11,10 @@ import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
@@ -188,8 +186,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		PatternFilter filter = new PatternFilter();
 		
 		filteredTree = new FilteredSelectLaunchersTreeView(parent, SWT.BORDER, filter);
-		Display display = Display.getCurrent();
-		filteredTree.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
 		
 		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
 		fd_filteredTree = new FormData();
