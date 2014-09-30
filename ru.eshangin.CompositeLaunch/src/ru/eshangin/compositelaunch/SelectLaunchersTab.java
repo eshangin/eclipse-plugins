@@ -7,14 +7,17 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.internal.ui.viewers.model.FilterTransform;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
@@ -32,6 +35,7 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 // TODO :: add commentes to the class and it's methods
 //
@@ -60,7 +64,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		Font font = parent.getFont();		
 		
-		Composite comp = new Composite(parent, SWT.NONE);
+		Composite comp = new Composite(parent, SWT.BORDER);
 		setControl(comp);
 		comp.setFont(font);
 		comp.setLayout(new FormLayout());
@@ -81,7 +85,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		fd_btnCheckButton.top = new FormAttachment(fLblXOf, -25, SWT.TOP);
 		fd_btnCheckButton.bottom = new FormAttachment(fLblXOf, -6);
 		FormData fd_lblXOf = new FormData();
-		fd_lblXOf.bottom = new FormAttachment(filteredTree, 0, SWT.BOTTOM);
+		fd_lblXOf.bottom = new FormAttachment(100, -10);
 		fd_lblXOf.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
 		fLblXOf.setLayoutData(fd_lblXOf);
 		fLblXOf.setText("0 out of 0 selected");
@@ -140,6 +144,15 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTreeViewerFilters(Composite parent) {
+		
+		Composite composite = new Composite(parent, SWT.BORDER);
+		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+		FormData fd_composite = new FormData();
+		fd_composite.right = new FormAttachment(btnSelectAll, -6);
+		fd_composite.bottom = new FormAttachment(btnSelectAll, 0, SWT.BOTTOM);
+		fd_composite.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
+		fd_composite.left = new FormAttachment(0, 10);
+		composite.setLayoutData(fd_composite);
 		btnCheckButton = new Button(parent, SWT.CHECK);
 		fd_btnCheckButton = new FormData();
 		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, -124);
@@ -185,13 +198,13 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private void createTreeViewer(Composite parent) {
 		PatternFilter filter = new PatternFilter();
 		
-		filteredTree = new FilteredSelectLaunchersTreeView(parent, SWT.BORDER, filter);
+		filteredTree = new FilteredSelectLaunchersTreeView(parent, SWT.NONE, filter);
 		
 		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
 		fd_filteredTree = new FormData();
 		fd_filteredTree.right = new FormAttachment(100, -140);
 		fd_filteredTree.left = new FormAttachment(0, 10);
-		fd_filteredTree.top = new FormAttachment(0, 5);
+		fd_filteredTree.top = new FormAttachment(0, 20);
 		fd_filteredTree.bottom = new FormAttachment(100, -10);
 		filteredTree.setLayoutData(fd_filteredTree);
 		
