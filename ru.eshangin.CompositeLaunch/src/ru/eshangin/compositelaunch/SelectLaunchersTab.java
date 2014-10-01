@@ -64,9 +64,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		createTreeViewer(comp);
 		
-		createTotalSelectedLabel(comp);
-		
-		System.out.println("createControl");		
+		createTotalSelectedLabel(comp);	
 	}
 	
 	private void createTotalSelectedLabel(Composite parent) {
@@ -225,8 +223,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		
-		System.out.println("initializeFrom");
 
 		try {
 			// Init list of selected launch configs from composite config attributes
@@ -263,8 +259,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		
-		System.out.println("performApply");
 		
 		int totalLauchConfsCount = 0;
 		int totalSelectedConfigs = 0;
