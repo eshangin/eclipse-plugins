@@ -14,6 +14,9 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.PlatformUI;
 
+/**
+ * This tree view helps select launch configs to launch in composite
+ */
 class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	
 	private SelectLaunchersContentProvider fContentProvider;

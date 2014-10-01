@@ -14,35 +14,32 @@ class CompositeConfigurationItem {
 	
 	private String fLaunchConfigurationName;
 	private String fLaunchConfigurationTypeId;
-	
-	public CompositeConfigurationItem(String launchConfigurationName, String launchConfigurationTypeId) {
-		setfLaunchConfigurationName(launchConfigurationName);
-		setfLaunchConfigurationTypeId(launchConfigurationTypeId);
-	}
+	private String fLaunchConfigurationTypeName;
 	
 	public CompositeConfigurationItem(ILaunchConfiguration launchConfiguration) {
-		setfLaunchConfigurationName(launchConfiguration.getName());
+		setLaunchConfigurationName(launchConfiguration.getName());
 		try {
-			setfLaunchConfigurationTypeId(launchConfiguration.getType().getIdentifier());
+			setLaunchConfigurationTypeId(launchConfiguration.getType().getIdentifier());
+			setLaunchConfigurationTypeName(launchConfiguration.getType().getName());
 		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
-	public String getfLaunchConfigurationName() {
+	public String getLaunchConfigurationName() {
 		return fLaunchConfigurationName;
 	}
 
-	public void setfLaunchConfigurationName(String fLaunchConfigurationName) {
+	public void setLaunchConfigurationName(String fLaunchConfigurationName) {
 		this.fLaunchConfigurationName = fLaunchConfigurationName;
 	}
 
-	public String getfLaunchConfigurationTypeId() {
+	public String getLaunchConfigurationTypeId() {
 		return fLaunchConfigurationTypeId;
 	}
 
-	public void setfLaunchConfigurationTypeId(String fLaunchConfigurationTypeId) {
+	public void setLaunchConfigurationTypeId(String fLaunchConfigurationTypeId) {
 		this.fLaunchConfigurationTypeId = fLaunchConfigurationTypeId;
 	}
 	
@@ -68,5 +65,14 @@ class CompositeConfigurationItem {
 		}
 	    
 	    return null;
+	}
+
+	public String getLaunchConfigurationTypeName() {
+		return fLaunchConfigurationTypeName;
+	}
+
+	public void setLaunchConfigurationTypeName(
+			String fLaunchConfigurationTypeName) {
+		this.fLaunchConfigurationTypeName = fLaunchConfigurationTypeName;
 	}
 }

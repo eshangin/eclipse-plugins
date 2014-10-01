@@ -6,6 +6,9 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 
+/**
+ * This sorter helps sort launch configs and launch config types in Select Launchers Tree View
+ */
 class SelectLaunchersTreeViewerSorter extends ViewerSorter {
 
 	public int compare(Viewer viewer, Object e1, Object e2) {

@@ -14,6 +14,7 @@ import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+@SuppressWarnings("restriction")
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate2 {
 		
 	private String fErrorMessage;
@@ -65,27 +66,27 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 			
 			// check that configuration type still exists
-			ILaunchConfigurationType lType = manager.getLaunchConfigurationType(configItem.getfLaunchConfigurationTypeId());
+			ILaunchConfigurationType lType = manager.getLaunchConfigurationType(configItem.getLaunchConfigurationTypeId());
 			if (lType != null) {
 				
 				// check that configuration still exists
 				boolean configStillExist = false;
 				ILaunchConfiguration[] existedConfigs = manager.getLaunchConfigurations(lType);
 				for (ILaunchConfiguration config : existedConfigs) {
-					if (config.getName().equals(configItem.getfLaunchConfigurationName())) {
+					if (config.getName().equals(configItem.getLaunchConfigurationName())) {
 						configStillExist = true;
 						break;
 					}
 				}
 				if (!configStillExist) {
-					fErrorMessage = "Launch configuration " + configItem.getfLaunchConfigurationName() + " was deleted or removed." +
+					fErrorMessage = "Launch configuration " + configItem.getLaunchConfigurationName() + " was deleted or removed." +
 							" Composite launch can not be continued.";
 					break;
 				}
 			}
 			else {
-				fErrorMessage = "Launch configuration type was deleted. " +
-					configItem.getfLaunchConfigurationName() + " can't be launched.";
+				fErrorMessage = "Launch configuration type " + configItem.getLaunchConfigurationTypeName() + " was deleted. " +
+					configItem.getLaunchConfigurationName() + " can't be launched.";
 				break;
 			}
 		}

@@ -5,6 +5,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 
+/**
+ * Select launchers tree view extended by filter
+ */
 public class FilteredSelectLaunchersTreeView extends FilteredTree {
 
 	public FilteredSelectLaunchersTreeView(Composite parent, int treeStyle,

@@ -13,6 +13,9 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
+/**
+ * This content provider populates SelectLaunchersTreeView with items
+ */
 class SelectLaunchersContentProvider implements ITreeContentProvider {
 	
 	private static Object[] EMPTY_ARRAY = new Object[0];

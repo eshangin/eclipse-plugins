@@ -7,21 +7,15 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.internal.ui.viewers.model.FilterTransform;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
@@ -30,15 +24,14 @@ import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
 import org.eclipse.wb.swt.SWTResourceManager;
 
-// TODO :: add commentes to the class and it's methods
-//
+/**
+ * This tab helps to select configurations to launch in composite
+ */
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private Button btnCheckButton;
@@ -46,7 +39,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private Button btnSelectAll;
 	private ViewerFilter fOnlySelectedFilter;
 	private FormData fd_filteredTree;
-	private Tree tree;
 	private FormData fd_btnCheckButton;
 	private FormData fd_btnSelectAll;
 	private FormData fd_btnDeselectAll;
@@ -56,9 +48,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private FilteredSelectLaunchersTreeView filteredTree;
 
 	
-	/**
-	 * @wbp.parser.entryPoint
-	 */
 	@Override
 	public void createControl(Composite parent) {
 		
@@ -258,7 +247,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			// set default checked items
 			checkboxTreeViewer.setCheckedElements(new Object[0]);
 			for (CompositeConfigurationItem configItem : JsonConfigurationHelper.fromJson(fDefaultSerializedConfigs)) {
-				checkboxTreeViewer.setChecked(configItem.toLaunchConfiguration(), true);
+				ILaunchConfiguration convertedConfig = configItem.toLaunchConfiguration();
+				if (convertedConfig != null) {
+					checkboxTreeViewer.setChecked(convertedConfig, true);
+				}				
 			}
 		    
 		} catch (CoreException e) {
