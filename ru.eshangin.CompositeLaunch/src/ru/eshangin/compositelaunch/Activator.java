@@ -15,7 +15,7 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
-	private String launchMode;
+	private String fLaunchMode;
 	
 	/**
 	 * The constructor
@@ -61,11 +61,19 @@ public class Activator extends AbstractUIPlugin {
 		return imageDescriptorFromPlugin(PLUGIN_ID, path);
 	}
 
+	/**
+	 * Sets mode our composite configuration launched in
+	 *
+	 */
 	public void setCurrentMode(String launchMode) {
-		this.launchMode = launchMode;		
+		this.fLaunchMode = launchMode;		
 	}
 	
+	/**
+	 * Gets mode our composite configuration launched in
+	 *
+	 */
 	public String getCurrentMode() {
-		return launchMode;
+		return fLaunchMode;
 	}
 }

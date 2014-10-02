@@ -1,6 +1,7 @@
 package ru.eshangin.compositelaunch;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -8,7 +9,6 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.DecoratingLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
-import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -23,6 +23,13 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 
 	public SelectLaunchersTreeView(Composite parent, int style) {
 		super(parent, style);
+		
+		fContentProvider = new SelectLaunchersContentProvider(
+				Activator.getDefault().getCurrentMode(), 
+				DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(CompositeLaunchConfigurationConstants.COMPOSITE_LAUNCH_CONFIG_TYPE_ID));
+		
+		// Set content provider
+		setContentProvider(fContentProvider);
 
 		// set label provider
 		setLabelProvider(new DecoratingLabelProvider(DebugUITools.newDebugModelPresentation(), 
@@ -76,19 +83,6 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		}
 		
 		return canCheck;
-	}
-
-	@Override
-	public void setContentProvider(IContentProvider provider) {
-		
-		if (provider instanceof SelectLaunchersContentProvider) {
-			fContentProvider = (SelectLaunchersContentProvider) provider;
-		}
-		else {
-			throw new Error("Provider must be of type SelectLaunchersContentProvider");
-		}
-		
-		super.setContentProvider(provider);
 	}
 	
 	private void checkBranchItems(Object element, boolean isChecked) {

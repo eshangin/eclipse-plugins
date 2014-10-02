@@ -255,8 +255,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		try {
 			
-			checkboxTreeViewer.setContentProvider(new SelectLaunchersContentProvider(
-					Activator.getDefault().getCurrentMode(), configuration.getType()));
+			// Update list of available launch configurations
 			checkboxTreeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
 			checkboxTreeViewer.expandAll();
 
@@ -278,8 +277,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 						CompositeLaunchConfigurationConstants.MSG_FYI, createNotFoundConfigsMessage(removedItems));
 			}
 		    
-		} catch (CoreException e) {
-			e.printStackTrace();
 		} catch (InvalidRegistryObjectException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,4 +19,6 @@ class CompositeLaunchConfigurationConstants {
 	public static final String LAUNCH_CONFIGURATION_TYPE_WAS_DELETED_CONFIG_CANNOT_BE_LAUNCHED = "Launch configuration type 1%s was deleted. %2s can't be launched.";
 	
 	public static final String MSG_PROBLEM = "Problem";
+	
+	public static final String COMPOSITE_LAUNCH_CONFIG_TYPE_ID = "ru.eshangin.CompositeLaunch";
 }
