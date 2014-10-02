@@ -79,14 +79,14 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 					}
 				}
 				if (!configStillExist) {
-					fErrorMessage = "Launch configuration " + configItem.getLaunchConfigurationName() + " was deleted or removed." +
-							" Composite launch can not be continued.";
+					fErrorMessage = String.format(CompositeLaunchConfigurationConstants.MSG_TMPL_LAUNCH_CONFIG_WAS_DELETED_OR_REMOVED_COMPOSITE_LAUNCH_CANNOT_BE_CONNTINUED, 
+							configItem.getLaunchConfigurationName());
 					break;
 				}
 			}
 			else {
-				fErrorMessage = "Launch configuration type " + configItem.getLaunchConfigurationTypeName() + " was deleted. " +
-					configItem.getLaunchConfigurationName() + " can't be launched.";
+				fErrorMessage = String.format(CompositeLaunchConfigurationConstants.LAUNCH_CONFIGURATION_TYPE_WAS_DELETED_CONFIG_CANNOT_BE_LAUNCHED, 
+						configItem.getLaunchConfigurationTypeName(), configItem.getLaunchConfigurationName());
 				break;
 			}
 		}
@@ -95,8 +95,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 			Display.getDefault().syncExec(new Runnable() {
 			    public void run() {
 					MessageDialog.openError(DebugUIPlugin.getShell(), 
-						"Problem",
-						fErrorMessage);
+						CompositeLaunchConfigurationConstants.MSG_PROBLEM, fErrorMessage);
 			    }
 			});		
 			

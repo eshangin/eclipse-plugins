@@ -1,12 +1,14 @@
 package ru.eshangin.compositelaunch;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -20,6 +22,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -32,6 +35,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 /**
  * This tab helps to select configurations to launch in composite
  */
+@SuppressWarnings("restriction")
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private Button btnCheckButton;
@@ -221,6 +225,22 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		// do nothing because there is no need to set defaults for newly created configuration
 	}
 	
+	/**
+	 * Creates warn message for the case when some user opens composite configuration with
+	 * some deleted previously selected launch configurations
+	 */
+	private String createNotFoundConfigsMessage(List<CompositeConfigurationItem> configItems) {
+		String messageTmpl = CompositeLaunchConfigurationConstants.MSG_TMPL_PREVIOUSLY_SELECTED_CONFS_DELETED;
+		
+		String messageTmplArg = "";
+		
+		for (CompositeConfigurationItem conf : configItems) {
+			messageTmplArg += String.format("%n%1s of type %2s", conf.getLaunchConfigurationName(), conf.getLaunchConfigurationTypeName());
+		}
+		
+		return String.format(messageTmpl, messageTmplArg);
+	}
+	
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 
@@ -241,12 +261,21 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			checkboxTreeViewer.expandAll();
 
 			// set default checked items
+			List<CompositeConfigurationItem> removedItems = new ArrayList<CompositeConfigurationItem>();
 			checkboxTreeViewer.setCheckedElements(new Object[0]);
 			for (CompositeConfigurationItem configItem : JsonConfigurationHelper.fromJson(fDefaultSerializedConfigs)) {
 				ILaunchConfiguration convertedConfig = configItem.toLaunchConfiguration();
 				if (convertedConfig != null) {
 					checkboxTreeViewer.setChecked(convertedConfig, true);
-				}				
+				}		
+				else {
+					removedItems.add(configItem);
+				}
+			}
+			
+			if (!removedItems.isEmpty()) {
+				MessageDialog.openWarning(DebugUIPlugin.getShell(), 
+						CompositeLaunchConfigurationConstants.MSG_FYI, createNotFoundConfigsMessage(removedItems));
 			}
 		    
 		} catch (CoreException e) {
@@ -284,7 +313,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			}
 		}
 		
-		fLblXOf.setText(totalSelectedConfigs + " out of " + totalLauchConfsCount + " selected");
+		fLblXOf.setText(String.format(CompositeLaunchConfigurationConstants.LABEL_TMPL_TOTAL_COUNT_OF, totalSelectedConfigs, totalLauchConfsCount));
 		
 		String newConfListAttrValue = JsonConfigurationHelper.toJson(confItems);
 				
