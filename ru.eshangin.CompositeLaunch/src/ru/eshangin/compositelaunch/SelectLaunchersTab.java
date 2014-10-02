@@ -30,7 +30,6 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PatternFilter;
-import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * This tab helps to select configurations to launch in composite
@@ -52,6 +51,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private FilteredSelectLaunchersTreeView filteredTree;
 
 	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	@Override
 	public void createControl(Composite parent) {
 		
@@ -135,15 +137,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTreeViewerFilters(Composite parent) {
-		
-		Composite composite = new Composite(parent, SWT.BORDER);
-		composite.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-		FormData fd_composite = new FormData();
-		fd_composite.right = new FormAttachment(btnSelectAll, -6);
-		fd_composite.bottom = new FormAttachment(btnSelectAll, 0, SWT.BOTTOM);
-		fd_composite.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
-		fd_composite.left = new FormAttachment(0, 10);
-		composite.setLayoutData(fd_composite);
 		btnCheckButton = new Button(parent, SWT.CHECK);
 		fd_btnCheckButton = new FormData();
 		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, -124);
@@ -193,9 +186,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
 		fd_filteredTree = new FormData();
+		fd_filteredTree.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
 		fd_filteredTree.right = new FormAttachment(100, -140);
 		fd_filteredTree.left = new FormAttachment(0, 10);
-		fd_filteredTree.top = new FormAttachment(0, 20);
 		fd_filteredTree.bottom = new FormAttachment(100, -10);
 		filteredTree.setLayoutData(fd_filteredTree);
 		
