@@ -36,5 +36,20 @@
 	        name="Launchers">
 	    </tab>
 	 </extension> 	 
+	 
+	 <extension point="org.eclipse.debug.core.statusHandlers">
+	   <statusHandler 
+	      id="ru.eshangin.PreCheckNoLaunchConfigError"
+	      class="ru.eshangin.compositelaunch.PreLaunchCheckNoLaunchConfigStatusHandler"
+	      plugin="ru.eshangin.CompositeLaunch"
+	      code="1">
+	   </statusHandler>
+	   <statusHandler 
+	      id="ru.eshangin.UpdateCompositeViewerConfigMissedError"
+	      class="ru.eshangin.compositelaunch.UpdateCompositeViewerConfigMissedStatusHandler"
+	      plugin="ru.eshangin.CompositeLaunch"
+	      code="3">
+	   </statusHandler>
+	 </extension>
 
 </plugin>

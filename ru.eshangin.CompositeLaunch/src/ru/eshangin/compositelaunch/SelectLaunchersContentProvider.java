@@ -23,9 +23,10 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 	private ILaunchConfigurationType fCompositeType;
 	private String fMode;
 	
-	public SelectLaunchersContentProvider(String mode, ILaunchConfigurationType compositeType) {
-		fMode = mode;
-		fCompositeType = compositeType;
+	public SelectLaunchersContentProvider() {
+		fMode = Activator.getDefault().getCurrentMode();
+		fCompositeType = DebugPlugin.getDefault().getLaunchManager()
+				.getLaunchConfigurationType(CompositeLaunchConfigurationConstants.COMPOSITE_LAUNCH_CONFIG_TYPE_ID);
 	}
 
 	@Override

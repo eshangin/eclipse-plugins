@@ -1,7 +1,6 @@
 package ru.eshangin.compositelaunch;
 
 import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -21,12 +20,13 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	
 	private SelectLaunchersContentProvider fContentProvider;
 
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public SelectLaunchersTreeView(Composite parent, int style) {
 		super(parent, style);
 		
-		fContentProvider = new SelectLaunchersContentProvider(
-				Activator.getDefault().getCurrentMode(), 
-				DebugPlugin.getDefault().getLaunchManager().getLaunchConfigurationType(CompositeLaunchConfigurationConstants.COMPOSITE_LAUNCH_CONFIG_TYPE_ID));
+		fContentProvider = new SelectLaunchersContentProvider();
 		
 		// Set content provider
 		setContentProvider(fContentProvider);

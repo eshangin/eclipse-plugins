@@ -4,20 +4,17 @@ import java.util.ArrayList;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.statushandlers.StatusManager;
 
-@SuppressWarnings("restriction")
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate2 {
-		
-	private String fErrorMessage;
 	
 	/**
 	 * Launch selected launch configuration
@@ -60,7 +57,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 		ArrayList<CompositeConfigurationItem> deserizliedConfigs = JsonConfigurationHelper.fromJson(
 				configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, ""));
 		
-		fErrorMessage = null;
+		Status errorStatus = null;
 		
 		for (CompositeConfigurationItem configItem : deserizliedConfigs) {
 			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
@@ -79,25 +76,26 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 					}
 				}
 				if (!configStillExist) {
-					fErrorMessage = String.format(CompositeLaunchConfigurationConstants.MSG_TMPL_LAUNCH_CONFIG_WAS_DELETED_OR_REMOVED_COMPOSITE_LAUNCH_CANNOT_BE_CONNTINUED, 
+					String errorMessage = String.format(CompositeLaunchConfigurationConstants.MSG_TMPL_LAUNCH_CONFIG_WAS_DELETED_OR_REMOVED_COMPOSITE_LAUNCH_CANNOT_BE_CONNTINUED, 
 							configItem.getLaunchConfigurationName());
+					
+					errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+							CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG, errorMessage, null);
 					break;
 				}
 			}
 			else {
-				fErrorMessage = String.format(CompositeLaunchConfigurationConstants.LAUNCH_CONFIGURATION_TYPE_WAS_DELETED_CONFIG_CANNOT_BE_LAUNCHED, 
+				String errorMessage = String.format(CompositeLaunchConfigurationConstants.LAUNCH_CONFIGURATION_TYPE_WAS_DELETED_CONFIG_CANNOT_BE_LAUNCHED, 
 						configItem.getLaunchConfigurationTypeName(), configItem.getLaunchConfigurationName());
+				
+				errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
+						CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE, errorMessage, null);
 				break;
 			}
 		}
 		
-		if (fErrorMessage != null) {
-			Display.getDefault().syncExec(new Runnable() {
-			    public void run() {
-					MessageDialog.openError(DebugUIPlugin.getShell(), 
-						CompositeLaunchConfigurationConstants.MSG_PROBLEM, fErrorMessage);
-			    }
-			});		
+		if (errorStatus != null) {
+			StatusManager.getManager().handle(errorStatus, StatusManager.BLOCK);
 			
 			return false;
 		}

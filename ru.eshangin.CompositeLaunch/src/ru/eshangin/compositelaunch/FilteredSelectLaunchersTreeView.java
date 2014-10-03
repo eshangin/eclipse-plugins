@@ -1,6 +1,7 @@
 package ru.eshangin.compositelaunch;
 
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.dialogs.FilteredTree;
 import org.eclipse.ui.dialogs.PatternFilter;
@@ -10,9 +11,8 @@ import org.eclipse.ui.dialogs.PatternFilter;
  */
 public class FilteredSelectLaunchersTreeView extends FilteredTree {
 
-	public FilteredSelectLaunchersTreeView(Composite parent, int treeStyle,
-			PatternFilter filter) {
-		super(parent, treeStyle, filter, false);
+	public FilteredSelectLaunchersTreeView(Composite parent) {
+		super(parent, SWT.BORDER | SWT.FULL_SELECTION, new PatternFilter(), true);
 	}
 
 	@Override

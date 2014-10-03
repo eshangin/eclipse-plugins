@@ -5,9 +5,13 @@ import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.IStatusHandler;
 import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
@@ -30,6 +34,10 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.dialogs.PatternFilter;
+import org.eclipse.ui.internal.statushandlers.StatusHandlerRegistry;
+import org.eclipse.ui.statushandlers.AbstractStatusHandler;
+import org.eclipse.ui.statushandlers.StatusAdapter;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 /**
  * This tab helps to select configurations to launch in composite
@@ -180,9 +188,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTreeViewer(Composite parent) {
-		PatternFilter filter = new PatternFilter();
 		
-		filteredTree = new FilteredSelectLaunchersTreeView(parent, SWT.NONE, filter);
+		filteredTree = new FilteredSelectLaunchersTreeView(parent);
 		
 		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
 		fd_filteredTree = new FormData();
@@ -266,8 +273,24 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			}
 			
 			if (!removedItems.isEmpty()) {
-				MessageDialog.openWarning(DebugUIPlugin.getShell(), 
-						CompositeLaunchConfigurationConstants.MSG_FYI, createNotFoundConfigsMessage(removedItems));
+				Status errorStatus = new Status(IStatus.WARNING, Activator.PLUGIN_ID,
+						CompositeLaunchConfigurationConstants.STATUSCODE_UPDATE_COMPOSITE_VIEWER_MISSED_CONFIG, 
+						createNotFoundConfigsMessage(removedItems), null);
+				
+//				AbstractStatusHandler handler = StatusHandlerRegistry.getDefault().getHandlerDescriptor("ru.eshangin.UpdateCompositeViewerConfigMissedError")
+//						.getStatusHandler();
+//				handler.handle(new StatusAdapter(new Status(IStatus.ERROR,
+//							Activator.PLUGIN_ID, "")), StatusManager.NONE);
+				
+//				IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(errorStatus);
+//				
+//				handler.handleStatus(errorStatus, null);
+				
+				StatusManager.getManager().handle(errorStatus, StatusManager.SHOW);
+				
+				
+//				MessageDialog.openWarning(DebugUIPlugin.getShell(), 
+//						CompositeLaunchConfigurationConstants.MSG_FYI, createNotFoundConfigsMessage(removedItems));
 			}
 		    
 		} catch (InvalidRegistryObjectException e) {

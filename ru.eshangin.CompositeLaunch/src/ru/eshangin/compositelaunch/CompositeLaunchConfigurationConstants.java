@@ -21,4 +21,10 @@ class CompositeLaunchConfigurationConstants {
 	public static final String MSG_PROBLEM = "Problem";
 	
 	public static final String COMPOSITE_LAUNCH_CONFIG_TYPE_ID = "ru.eshangin.CompositeLaunch";
+	
+	public static final int STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG = 1;
+	
+	public static final int STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE = 2;
+	
+	public static final int STATUSCODE_UPDATE_COMPOSITE_VIEWER_MISSED_CONFIG = 3;
 }
