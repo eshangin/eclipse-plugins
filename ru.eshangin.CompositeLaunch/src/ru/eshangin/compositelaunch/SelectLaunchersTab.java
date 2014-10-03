@@ -5,19 +5,20 @@ import java.util.List;
 
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.IStatusHandler;
-import org.eclipse.debug.internal.ui.DebugUIPlugin;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -26,23 +27,19 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.dialogs.PatternFilter;
-import org.eclipse.ui.internal.statushandlers.StatusHandlerRegistry;
-import org.eclipse.ui.statushandlers.AbstractStatusHandler;
-import org.eclipse.ui.statushandlers.StatusAdapter;
 import org.eclipse.ui.statushandlers.StatusManager;
+import org.osgi.framework.Bundle;
 
 /**
  * This tab helps to select configurations to launch in composite
  */
-@SuppressWarnings("restriction")
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private Button btnCheckButton;
@@ -364,5 +361,16 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		}
 		
 		return true;
+	}
+	
+	/* 
+	 * Set image for tab
+	 */
+	@Override
+	public Image getImage() {
+
+		Bundle bundle = Platform.getBundle(Activator.PLUGIN_ID);
+		return ImageDescriptor.createFromURL(FileLocator.find(bundle, new Path("icons/composite.png"), null))
+				.createImage();
 	}
 }
