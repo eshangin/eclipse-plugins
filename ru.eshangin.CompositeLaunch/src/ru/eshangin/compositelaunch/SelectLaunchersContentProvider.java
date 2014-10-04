@@ -20,15 +20,6 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 	
 	private static Object[] EMPTY_ARRAY = new Object[0];
 	
-	private ILaunchConfigurationType fCompositeType;
-	private String fMode;
-	
-	public SelectLaunchersContentProvider() {
-		fMode = Activator.getDefault().getCurrentMode();
-		fCompositeType = DebugPlugin.getDefault().getLaunchManager()
-				.getLaunchConfigurationType(CompositeLaunchConfigurationConstants.COMPOSITE_LAUNCH_CONFIG_TYPE_ID);
-	}
-
 	@Override
 	public void dispose() {
 		// nothing to dispose		
@@ -38,6 +29,15 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private String getCurrentMode() {
+		return Activator.getDefault().getCurrentMode();
+	}
+	
+	private ILaunchConfigurationType getCompositeType() {
+		return DebugPlugin.getDefault().getLaunchManager()
+				.getLaunchConfigurationType(CompositeLaunchConfigurationConstants.COMPOSITE_LAUNCH_CONFIG_TYPE_ID);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 		for (ILaunchConfigurationType configurationType : allTypes) {
 			
 			// filter types by Composite type, ability to launch with current launch mode and isPublic flag
-			if (configurationType != fCompositeType && configurationType.supportsMode(fMode) && 
+			if (configurationType != getCompositeType() && configurationType.supportsMode(getCurrentMode()) && 
 					configurationType.isPublic()) {
 		        
 		        // we will return only configuration types which contain configurations
@@ -106,7 +106,7 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else if (element instanceof ILaunchConfigurationType) {
+		} else if (element instanceof ILaunchConfigurationType) {			
 			return ResourcesPlugin.getWorkspace().getRoot();
 		}
 		

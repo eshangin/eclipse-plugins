@@ -50,11 +50,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	private FormData fd_btnCheckButton;
 	private FormData fd_btnSelectAll;
 	private FormData fd_btnDeselectAll;
-	private String fDefaultSerializedConfigs;
 	private Label fLblXOf;
 	private Button btnDeselectAll;
 	private FilteredSelectLaunchersTreeView filteredTree;
-
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -241,33 +239,15 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 
-		try {
-			// Init list of selected launch configs from composite config attributes
-			fDefaultSerializedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
-			
-		} catch (CoreException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		CompositeConfiguration compositeConfig = new CompositeConfiguration(configuration);
 		
 		try {
 			
 			// Update list of available launch configurations
-			checkboxTreeViewer.setInput(ResourcesPlugin.getWorkspace().getRoot());
+			checkboxTreeViewer.setInput(compositeConfig);
 			checkboxTreeViewer.expandAll();
-
-			// set default checked items
-			List<CompositeConfigurationItem> removedItems = new ArrayList<CompositeConfigurationItem>();
-			checkboxTreeViewer.setCheckedElements(new Object[0]);
-			for (CompositeConfigurationItem configItem : JsonConfigurationHelper.fromJson(fDefaultSerializedConfigs)) {
-				ILaunchConfiguration convertedConfig = configItem.toLaunchConfiguration();
-				if (convertedConfig != null) {
-					checkboxTreeViewer.setChecked(convertedConfig, true);
-				}		
-				else {
-					removedItems.add(configItem);
-				}
-			}
+			
+			List<CompositeConfigurationItem> removedItems = compositeConfig.getRemovedItems();
 			
 			if (!removedItems.isEmpty()) {
 				Status errorStatus = new Status(IStatus.WARNING, Activator.PLUGIN_ID,
@@ -291,6 +271,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			}
 		    
 		} catch (InvalidRegistryObjectException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (CoreException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

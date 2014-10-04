@@ -1,7 +1,5 @@
 package ru.eshangin.compositelaunch;
 
-import java.util.ArrayList;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -24,10 +22,9 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 	public void launch(ILaunchConfiguration configuration, String mode,
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		
-		ArrayList<CompositeConfigurationItem> deserizliedConfigs = JsonConfigurationHelper.fromJson(
-				configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, ""));
+		CompositeConfiguration compositeConfig = new CompositeConfiguration(configuration);
 		
-		for (CompositeConfigurationItem conf : deserizliedConfigs) {
+		for (CompositeConfigurationItem conf : compositeConfig.getCurrentItems()) {
 			conf.toLaunchConfiguration().launch(mode, monitor);
 		}		
 	}
@@ -54,12 +51,11 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 	public boolean preLaunchCheck(ILaunchConfiguration configuration,
 			String mode, IProgressMonitor monitor) throws CoreException {
 		
-		ArrayList<CompositeConfigurationItem> deserizliedConfigs = JsonConfigurationHelper.fromJson(
-				configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, ""));
+		CompositeConfiguration compositeConfig = new CompositeConfiguration(configuration);
 		
 		Status errorStatus = null;
 		
-		for (CompositeConfigurationItem configItem : deserizliedConfigs) {
+		for (CompositeConfigurationItem configItem : compositeConfig.getCurrentItems()) {
 			ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
 			
 			// check that configuration type still exists

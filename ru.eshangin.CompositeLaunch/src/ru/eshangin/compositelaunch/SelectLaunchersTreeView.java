@@ -1,6 +1,10 @@
 package ru.eshangin.compositelaunch;
 
+import java.util.List;
+
 import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.ui.DebugUITools;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
@@ -19,6 +23,39 @@ import org.eclipse.ui.PlatformUI;
 class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	
 	private SelectLaunchersContentProvider fContentProvider;
+	
+	@Override
+	protected void inputChanged(Object input, Object oldInput) {
+		
+		CompositeConfiguration compositeConfig = (CompositeConfiguration) input;
+		
+		// TODO Auto-generated method stub
+		super.inputChanged(input, oldInput);
+		
+		updateCheckedItems(compositeConfig);
+	}
+	
+	/**
+	 * Updates currently checked items using list of current items in Composite Configuration
+	 */
+	private void updateCheckedItems(CompositeConfiguration compositeConfiguratoin) {
+		
+		List<CompositeConfigurationItem> currentItems;
+		try {
+			currentItems = compositeConfiguratoin.getCurrentItems();
+			
+			setCheckedElements(new Object[0]);
+			for (CompositeConfigurationItem configItem : currentItems) {
+				ILaunchConfiguration convertedConfig = configItem.toLaunchConfiguration();
+				if (convertedConfig != null) {
+					setChecked(convertedConfig, true);
+				}
+			}
+		} catch (CoreException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @wbp.parser.entryPoint
@@ -112,9 +149,9 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 					// uncheck parent
 					setChecked(parentOfChecked, false);
 				}
-			}
-			
-		} else if (parentOfChecked instanceof IWorkspaceRoot) {
+			}			
+		}
+		else if (parentOfChecked instanceof IWorkspaceRoot) {
 			setSubtreeChecked(element, isChecked);
 		}
 	}
