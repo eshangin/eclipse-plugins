@@ -32,7 +32,6 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		
 		CompositeConfiguration compositeConfig = (CompositeConfiguration) input;
 		
-		// TODO Auto-generated method stub
 		super.inputChanged(input, oldInput);
 		
 		updateCheckedItems(compositeConfig);
@@ -47,15 +46,18 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		try {
 			currentItems = compositeConfiguratoin.getCurrentItems();
 			
+			// uncheck all elements first
 			setCheckedElements(new Object[0]);
+			
+			// now check needed elements
 			for (CompositeConfigurationItem configItem : currentItems) {
 				ILaunchConfiguration convertedConfig = configItem.toLaunchConfiguration();
 				if (convertedConfig != null) {
 					setChecked(convertedConfig, true);
+					checkBranchItems(convertedConfig, true);
 				}
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -95,6 +97,7 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 				Object clickedElement = selection.getFirstElement();
 				boolean newState = !getChecked(clickedElement);
 				setChecked(clickedElement, newState);
+				checkBranchItems(clickedElement, newState);
 			}
 		});
 	}
@@ -113,18 +116,18 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 		return anySelected;
 	}
 	
-	@Override
-	public boolean setChecked(Object element, boolean state) {
-		
-		boolean canCheck = super.setChecked(element, state);
-		
-		if (canCheck) {
-			checkBranchItems(element, state);
-		}
-		
-		return canCheck;
-	}
-	
+	/**
+	 * Check if we should check/uncheck parent/child items of element.
+	 * 
+	 * In case Launch Configuration Type will be checked/unchecked it's
+	 * Launch Configurations will be checked/unchecked as well.
+	 * 
+	 * In case user will check all Launch Configurations we will check their
+	 * Launch Configuration Type as well.
+	 * 
+	 * In case any Launch Configuration will be unchecked it's Launch Configuration Type
+	 * will be unchecked as well.
+	 */
 	private void checkBranchItems(Object element, boolean isChecked) {
 		
 		// get parent of checked element
