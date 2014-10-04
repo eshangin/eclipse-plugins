@@ -295,10 +295,11 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		
+	
+	/**
+	 * Update label which shows how much launch configs currently selected.
+	 */
+	private void updateSelectedCountLabel() {
 		int totalLauchConfsCount = 0;
 		int totalSelectedConfigs = 0;
 		
@@ -313,6 +314,14 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			totalLauchConfsCount += confTypeItem.getItemCount();
 		}
 		
+		fLblXOf.setText(String.format(CompositeLaunchConfigurationConstants.LABEL_TMPL_TOTAL_COUNT_OF, totalSelectedConfigs, totalLauchConfsCount));
+	}
+	
+	/**
+	 * Update Launch Configuration Working Copy with currently selected launch configurations
+	 */
+	private void updateConfigurationWorkingCopy(ILaunchConfigurationWorkingCopy configuration) {
+		
 		Object[] checkedElements = checkboxTreeViewer.getCheckedElements();
 		
 		ArrayList<CompositeConfigurationItem> confItems = new ArrayList<CompositeConfigurationItem>();
@@ -322,8 +331,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				confItems.add(new CompositeConfigurationItem((ILaunchConfiguration)element));
 			}
 		}
-		
-		fLblXOf.setText(String.format(CompositeLaunchConfigurationConstants.LABEL_TMPL_TOTAL_COUNT_OF, totalSelectedConfigs, totalLauchConfsCount));
 		
 		String newConfListAttrValue = JsonConfigurationHelper.toJson(confItems);
 				
@@ -342,8 +349,19 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 
 	@Override
+	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
+		
+		updateSelectedCountLabel();
+		
+		updateConfigurationWorkingCopy(configuration);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getName(org.eclipse.debug.core.ILaunchConfiguration)
+	 */
+	@Override
 	public String getName() {
-		return "Select Launchers";
+		return CompositeLaunchConfigurationConstants.LAUNCHERSTAB_NAME;
 	}	
 
 	/* (non-Javadoc)
@@ -356,15 +374,15 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		// check if any launch configuration were selected
 		if (checkboxTreeViewer.getCheckedElements().length == 0) {
-			setErrorMessage("No any launch configuration slected");
+			setErrorMessage(CompositeLaunchConfigurationConstants.LAUNCHERSTAB_NO_CONFIGS_SELECTED_MSG);
 			return false;
 		}
 		
 		return true;
 	}
 	
-	/* 
-	 * Set image for tab
+	/* (non-Javadoc)
+	 * @see org.eclipse.debug.ui.ILaunchConfigurationTab#getImage(org.eclipse.debug.core.ILaunchConfiguration)
 	 */
 	@Override
 	public Image getImage() {

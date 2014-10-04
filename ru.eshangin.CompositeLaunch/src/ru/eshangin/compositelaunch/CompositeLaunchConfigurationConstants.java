@@ -27,4 +27,8 @@ class CompositeLaunchConfigurationConstants {
 	public static final int STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE = 2;
 	
 	public static final int STATUSCODE_UPDATE_COMPOSITE_VIEWER_MISSED_CONFIG = 3;
+	
+	public static final String LAUNCHERSTAB_NAME = "Select Launchers";
+	
+	public static final String LAUNCHERSTAB_NO_CONFIGS_SELECTED_MSG = "No any launch configuration slected";
 }
