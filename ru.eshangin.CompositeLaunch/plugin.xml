@@ -23,14 +23,14 @@
 	  <launchConfigurationTabGroup
 	      id="ru.eshangin.CompositeLaunchTabGroup"
 	      type="ru.eshangin.CompositeLaunch"
-	      class="ru.eshangin.compositelaunch.CompositeLaunchConfigurationTabGroup"
+	      class="ru.eshangin.compositelaunch.ui.CompositeLaunchConfigurationTabGroup"
 	      description="Create configuration that will launch another configurations in composite.">
 	  </launchConfigurationTabGroup>
 	 </extension>	 
 	 
 	<extension point="org.eclipse.debug.ui.launchConfigurationTabs">
 	    <tab
-	       class="ru.eshangin.compositelaunch.SelectLaunchersTab"
+	       class="ru.eshangin.compositelaunch.ui.SelectLaunchersTab"
 	        group="ru.eshangin.CompositeLaunchTabGroup"
 	        id="ru.eshangin.selectLaunchersTab"
 	        name="Launchers">
@@ -40,13 +40,13 @@
 	 <extension point="org.eclipse.debug.core.statusHandlers">
 	   <statusHandler 
 	      id="ru.eshangin.PreCheckNoLaunchConfigError"
-	      class="ru.eshangin.compositelaunch.PreLaunchCheckNoLaunchConfigStatusHandler"
+	      class="ru.eshangin.compositelaunch.internal.PreLaunchCheckNoLaunchConfigStatusHandler"
 	      plugin="ru.eshangin.CompositeLaunch"
 	      code="1">
 	   </statusHandler>
 	   <statusHandler 
 	      id="ru.eshangin.UpdateCompositeViewerConfigMissedError"
-	      class="ru.eshangin.compositelaunch.UpdateCompositeViewerConfigMissedStatusHandler"
+	      class="ru.eshangin.compositelaunch.internal.UpdateCompositeViewerConfigMissedStatusHandler"
 	      plugin="ru.eshangin.CompositeLaunch"
 	      code="3">
 	   </statusHandler>

@@ -12,6 +12,10 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
 import org.eclipse.ui.statushandlers.StatusManager;
 
+import ru.eshangin.compositelaunch.internal.CompositeConfiguration;
+import ru.eshangin.compositelaunch.internal.CompositeConfigurationItem;
+import ru.eshangin.compositelaunch.internal.CompositeLaunchConfigurationConstants;
+
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate2 {
 	
 	/**
