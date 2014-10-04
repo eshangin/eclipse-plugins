@@ -8,6 +8,7 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 
 public class CompositeConfiguration {
 	
+	// related composite ILaunchConfiguration
 	private static ILaunchConfiguration fConfiguration;
 	
 	public CompositeConfiguration(ILaunchConfiguration configuration) {
@@ -22,6 +23,9 @@ public class CompositeConfiguration {
 				fConfiguration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, ""));
 	}
 
+	/**
+	 * Returns list of Launch Configurations which were removed/renamed since last setup of Composite Launch Configuration.
+	 */
 	public List<CompositeConfigurationItem> getRemovedItems() throws CoreException {
 		
 		List<CompositeConfigurationItem> removedItems = new ArrayList<CompositeConfigurationItem>();

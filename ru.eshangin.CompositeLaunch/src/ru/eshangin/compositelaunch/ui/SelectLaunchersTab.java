@@ -36,6 +36,7 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.Bundle;
 
 import ru.eshangin.compositelaunch.Activator;
@@ -250,11 +251,11 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			}
 		    
 		} catch (InvalidRegistryObjectException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 		}
 	}
 	
@@ -305,8 +306,9 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 				configuration.setAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, newConfListAttrValue);
 			}
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 		}
 	}
 

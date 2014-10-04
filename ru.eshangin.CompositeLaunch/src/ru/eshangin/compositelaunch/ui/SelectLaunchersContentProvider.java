@@ -12,6 +12,7 @@ import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 import ru.eshangin.compositelaunch.Activator;
 import ru.eshangin.compositelaunch.internal.CompositeLaunchConfigurationConstants;
@@ -30,8 +31,7 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-		// TODO Auto-generated method stub
-		
+		// do nothing		
 	}
 	
 	private String getCurrentMode() {
@@ -62,8 +62,9 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 						filteredTypes.add(configurationType);
 					}
 				} catch (CoreException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
+					
+					StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 				}
 			}
 						
@@ -82,8 +83,9 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 			try {
 				return getLaunchManager().getLaunchConfigurations(type);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
+				StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 			}
 		} else {
 			return getLaunchManager().getLaunchConfigurationTypes();
@@ -106,8 +108,9 @@ class SelectLaunchersContentProvider implements ITreeContentProvider {
 			try {
 				return ((ILaunchConfiguration)element).getType();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				
+				StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 			}
 		} else if (element instanceof ILaunchConfigurationType) {			
 			return ResourcesPlugin.getWorkspace().getRoot();

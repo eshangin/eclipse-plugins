@@ -15,6 +15,7 @@ public class Activator extends AbstractUIPlugin {
 	// The shared instance
 	private static Activator plugin;
 	
+	// currently started launch mode
 	private String fLaunchMode;
 	
 	/**
@@ -62,16 +63,16 @@ public class Activator extends AbstractUIPlugin {
 	}
 
 	/**
-	 * Sets mode our composite configuration launched in
-	 *
+	 * Sets curently started launch mode
 	 */
 	public void setCurrentMode(String launchMode) {
 		this.fLaunchMode = launchMode;		
 	}
 	
 	/**
-	 * Gets mode our composite configuration launched in
+	 * Gets currently started launch mode
 	 *
+	 *@ return currently started launch mode
 	 */
 	public String getCurrentMode() {
 		return fLaunchMode;

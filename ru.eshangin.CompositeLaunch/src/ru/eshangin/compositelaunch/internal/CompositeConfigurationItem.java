@@ -5,6 +5,7 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.ui.statushandlers.StatusManager;
 
 /**
  * Composite configuration item is an item of composite launch configuration
@@ -12,8 +13,13 @@ import org.eclipse.debug.core.ILaunchManager;
  */
 public class CompositeConfigurationItem {
 	
+	// The name of Launch Configuration related to this item
 	private String fLaunchConfigurationName;
+	
+	// The Id of Launch Configuration Type related to this item
 	private String fLaunchConfigurationTypeId;
+	
+	// The name of Launch Configuration Type related to this item
 	private String fLaunchConfigurationTypeName;
 	
 	public CompositeConfigurationItem(ILaunchConfiguration launchConfiguration) {
@@ -22,8 +28,9 @@ public class CompositeConfigurationItem {
 			setLaunchConfigurationTypeId(launchConfiguration.getType().getIdentifier());
 			setLaunchConfigurationTypeName(launchConfiguration.getType().getName());
 		} catch (CoreException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			
+			StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
 		}
 	}
 

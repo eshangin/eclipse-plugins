@@ -75,7 +75,8 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 						break;
 					}
 				}
-				if (!configStillExist) {										
+				if (!configStillExist) {	
+					// Seems like launch configuration was missed! Handle this.
 					errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 							CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG, "", null);
 					
@@ -86,6 +87,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 				}
 			}
 			else {
+				// Seems like launch configuration type was missed! Handle this.
 				errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
 						CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE, "", null);
 				
