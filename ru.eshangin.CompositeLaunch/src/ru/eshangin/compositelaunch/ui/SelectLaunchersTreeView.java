@@ -27,24 +27,26 @@ class SelectLaunchersTreeView extends CheckboxTreeViewer {
 	
 	private SelectLaunchersContentProvider fContentProvider;
 	
+	private CompositeConfiguration fConfiguration;
+	
 	@Override
 	protected void inputChanged(Object input, Object oldInput) {
 		
-		CompositeConfiguration compositeConfig = (CompositeConfiguration) input;
+		fConfiguration = (CompositeConfiguration) input;
 		
 		super.inputChanged(input, oldInput);
 		
-		updateCheckedItems(compositeConfig);
+		updateCheckedItems();
 	}
 	
 	/**
 	 * Updates currently checked items using list of current items in Composite Configuration
 	 */
-	private void updateCheckedItems(CompositeConfiguration compositeConfiguratoin) {
+	public void updateCheckedItems() {
 		
 		List<CompositeConfigurationItem> currentItems;
 		try {
-			currentItems = compositeConfiguratoin.getCurrentItems();
+			currentItems = fConfiguration.getCurrentItems();
 			
 			// uncheck all elements first
 			setCheckedElements(new Object[0]);
