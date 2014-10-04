@@ -43,24 +43,32 @@ import ru.eshangin.compositelaunch.Activator;
 import ru.eshangin.compositelaunch.internal.CompositeConfiguration;
 import ru.eshangin.compositelaunch.internal.CompositeConfigurationItem;
 import ru.eshangin.compositelaunch.internal.CompositeLaunchConfigurationConstants;
-import ru.eshangin.compositelaunch.internal.JsonConfigurationHelper;
 
 /**
  * This tab helps to select configurations to launch in composite
  */
 public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
-	private Button btnCheckButton;
+	// If checked only checked items will be showed in tree view
+	private Button btnShowCheckedOnly;
+	
+	// launch conf tree view
 	private SelectLaunchersTreeView checkboxTreeViewer;
+	
+	// Selects all items in tree view 
 	private Button btnSelectAll;
+	
+	// This filter will be applied to tree view in case user will check "Show only checked" button
 	private ViewerFilter fOnlySelectedFilter;
-	private FormData fd_filteredTree;
-	private FormData fd_btnCheckButton;
-	private FormData fd_btnSelectAll;
-	private FormData fd_btnDeselectAll;
+
+	// Form data of "Show checked only" button
+	private FormData fd_btnShowCheckedOnly;
+	
+	// Label which shows actual and total counts of currently selected Launch Configs
 	private Label fLblXOf;
+	
+	// Deselects all items in tree view
 	private Button btnDeselectAll;
-	private FilteredSelectLaunchersTreeView filteredTree;
 	
 	/**
 	 * @wbp.parser.entryPoint
@@ -86,8 +94,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createTotalSelectedLabel(Composite parent) {
 		fLblXOf = new Label(parent, SWT.NONE);
-		fd_btnCheckButton.top = new FormAttachment(fLblXOf, -25, SWT.TOP);
-		fd_btnCheckButton.bottom = new FormAttachment(fLblXOf, -6);
+		fd_btnShowCheckedOnly.top = new FormAttachment(fLblXOf, -25, SWT.TOP);
+		fd_btnShowCheckedOnly.bottom = new FormAttachment(fLblXOf, -6);
 		FormData fd_lblXOf = new FormData();
 		fd_lblXOf.bottom = new FormAttachment(100, -10);
 		fd_lblXOf.left = new FormAttachment(btnSelectAll, 0, SWT.LEFT);
@@ -97,7 +105,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createSelectAllButton(Composite parent) {
 		btnSelectAll = new Button(parent, SWT.NONE);
-		fd_btnSelectAll = new FormData();
+		FormData fd_btnSelectAll = new FormData();
 		fd_btnSelectAll.left = new FormAttachment(100, -134);
 		fd_btnSelectAll.right = new FormAttachment(100, -10);
 		fd_btnSelectAll.top = new FormAttachment(0, 5);
@@ -123,7 +131,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createDeselectAllButton(Composite parent) {
 		btnDeselectAll = new Button(parent, SWT.NONE);
-		fd_btnDeselectAll = new FormData();
+		FormData fd_btnDeselectAll = new FormData();
 		fd_btnDeselectAll.top = new FormAttachment(btnSelectAll, 6);
 		fd_btnDeselectAll.left = new FormAttachment(100, -134);
 		fd_btnDeselectAll.right = new FormAttachment(100, -10);
@@ -148,16 +156,16 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	}
 	
 	private void createTreeViewerFilters(Composite parent) {
-		btnCheckButton = new Button(parent, SWT.CHECK);
-		fd_btnCheckButton = new FormData();
-		fd_btnCheckButton.left = new FormAttachment(btnSelectAll, -124);
-		fd_btnCheckButton.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
-		btnCheckButton.setLayoutData(fd_btnCheckButton);
-		btnCheckButton.setText("Only show selected");
+		btnShowCheckedOnly = new Button(parent, SWT.CHECK);
+		fd_btnShowCheckedOnly = new FormData();
+		fd_btnShowCheckedOnly.left = new FormAttachment(btnSelectAll, -124);
+		fd_btnShowCheckedOnly.right = new FormAttachment(btnSelectAll, 0, SWT.RIGHT);
+		btnShowCheckedOnly.setLayoutData(fd_btnShowCheckedOnly);
+		btnShowCheckedOnly.setText("Only show selected");
 		
 		fOnlySelectedFilter = new OnlySelectedViewerFilter();
 		
-		btnCheckButton.addSelectionListener(new SelectionListener() {
+		btnShowCheckedOnly.addSelectionListener(new SelectionListener() {
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -192,10 +200,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 	
 	private void createTreeViewer(Composite parent) {
 		
-		filteredTree = new FilteredSelectLaunchersTreeView(parent);
+		FilteredSelectLaunchersTreeView filteredTree = new FilteredSelectLaunchersTreeView(parent);
 		
 		checkboxTreeViewer = (SelectLaunchersTreeView) filteredTree.getViewer();
-		fd_filteredTree = new FormData();
+		FormData fd_filteredTree = new FormData();
 		fd_filteredTree.top = new FormAttachment(btnSelectAll, 0, SWT.TOP);
 		fd_filteredTree.right = new FormAttachment(100, -140);
 		fd_filteredTree.left = new FormAttachment(0, 10);
@@ -277,7 +285,8 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			totalLauchConfsCount += confTypeItem.getItemCount();
 		}
 		
-		fLblXOf.setText(String.format(CompositeLaunchConfigurationConstants.LABEL_TMPL_TOTAL_COUNT_OF, totalSelectedConfigs, totalLauchConfsCount));
+		fLblXOf.setText(String.format(CompositeLaunchConfigurationConstants.LABEL_TMPL_TOTAL_COUNT_OF, 
+				totalSelectedConfigs, totalLauchConfsCount));
 	}
 	
 	/**
@@ -287,7 +296,7 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		
 		Object[] checkedElements = checkboxTreeViewer.getCheckedElements();
 		
-		ArrayList<CompositeConfigurationItem> confItems = new ArrayList<CompositeConfigurationItem>();
+		List<CompositeConfigurationItem> confItems = new ArrayList<CompositeConfigurationItem>();
 		
 		for (Object element : checkedElements) {
 			if (element instanceof ILaunchConfiguration) {
@@ -295,20 +304,12 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			}
 		}
 		
-		String newConfListAttrValue = JsonConfigurationHelper.toJson(confItems);
-				
 		try {
-			// get currently saved list of configurations in launch config attributes
-			String currentSavedConfigs = configuration.getAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, "");
+			CompositeConfiguration.applyChanges(confItems, configuration);
+		} catch (CoreException e1) {
+			e1.printStackTrace();
 			
-			// check that selected config list were changed
-			if (!currentSavedConfigs.equals(newConfListAttrValue)) {
-				configuration.setAttribute(CompositeLaunchConfigurationConstants.ATTR_SELECTED_CONFIGURATION_LIST, newConfListAttrValue);
-			}
-		} catch (CoreException e) {
-			e.printStackTrace();
-			
-			StatusManager.getManager().handle(e.getStatus(), StatusManager.SHOW);
+			StatusManager.getManager().handle(e1.getStatus(), StatusManager.SHOW);
 		}
 	}
 

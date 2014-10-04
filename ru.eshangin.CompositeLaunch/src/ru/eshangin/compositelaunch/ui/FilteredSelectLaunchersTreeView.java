@@ -21,7 +21,7 @@ class FilteredSelectLaunchersTreeView extends FilteredTree {
 	 */
 	@Override
 	protected void updateToolbar(boolean visible) {
-		// TODO Auto-generated method stub
+		
 		super.updateToolbar(visible);
 		
 		SelectLaunchersTreeView tView = (SelectLaunchersTreeView) treeViewer;

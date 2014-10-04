@@ -2,6 +2,7 @@ package ru.eshangin.compositelaunch.internal;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -9,7 +10,7 @@ import com.google.gson.reflect.TypeToken;
 /**
  * Helps convert configuration items to/from JSON
  */
-public class JsonConfigurationHelper {
+class JsonConfigurationHelper {
 	
     /**
      * Return list of configurations parsed from JSON
@@ -30,7 +31,7 @@ public class JsonConfigurationHelper {
     /**
      * Converts list of CompositeConfigurationItem-s into JSON
      */
-	public static String toJson(ArrayList<CompositeConfigurationItem> items) {
+	public static String toJson(List<CompositeConfigurationItem> items) {
 		
 		Type collectionType = new TypeToken<ArrayList<CompositeConfigurationItem>>() {}.getType();
 		String json = new Gson().toJson(items, collectionType);
