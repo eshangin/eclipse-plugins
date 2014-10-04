@@ -9,8 +9,8 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationType;
 import org.eclipse.debug.core.ILaunchManager;
+import org.eclipse.debug.core.IStatusHandler;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate2;
-import org.eclipse.ui.statushandlers.StatusManager;
 
 import ru.eshangin.compositelaunch.internal.CompositeConfiguration;
 import ru.eshangin.compositelaunch.internal.CompositeConfigurationItem;
@@ -75,28 +75,28 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 						break;
 					}
 				}
-				if (!configStillExist) {
-					String errorMessage = String.format(CompositeLaunchConfigurationConstants.MSG_TMPL_LAUNCH_CONFIG_WAS_DELETED_OR_REMOVED_COMPOSITE_LAUNCH_CANNOT_BE_CONNTINUED, 
-							configItem.getLaunchConfigurationName());
-					
+				if (!configStillExist) {										
 					errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-							CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG, errorMessage, null);
+							CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG, "", null);
+					
+					IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(errorStatus);				
+					handler.handleStatus(errorStatus, configItem);
+					
 					break;
 				}
 			}
 			else {
-				String errorMessage = String.format(CompositeLaunchConfigurationConstants.LAUNCH_CONFIGURATION_TYPE_WAS_DELETED_CONFIG_CANNOT_BE_LAUNCHED, 
-						configItem.getLaunchConfigurationTypeName(), configItem.getLaunchConfigurationName());
-				
 				errorStatus = new Status(IStatus.ERROR, Activator.PLUGIN_ID,
-						CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE, errorMessage, null);
+						CompositeLaunchConfigurationConstants.STATUSCODE_PRE_LAUNCH_CHECK_NO_CONFIG_TYPE, "", null);
+				
+				IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(errorStatus);				
+				handler.handleStatus(errorStatus, configItem);
+				
 				break;
 			}
 		}
 		
 		if (errorStatus != null) {
-			StatusManager.getManager().handle(errorStatus, StatusManager.BLOCK);
-			
 			return false;
 		}
 		else {

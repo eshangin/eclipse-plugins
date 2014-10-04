@@ -44,6 +44,12 @@
 	      plugin="ru.eshangin.CompositeLaunch"
 	      code="1">
 	   </statusHandler>
+   	   <statusHandler 
+	      id="ru.eshangin.PreCheckNoLaunchConfigTypeError"
+	      class="ru.eshangin.compositelaunch.internal.PreLaunchCheckNoLaunchConfigStatusHandler"
+	      plugin="ru.eshangin.CompositeLaunch"
+	      code="2">
+	   </statusHandler>
 	   <statusHandler 
 	      id="ru.eshangin.UpdateCompositeViewerConfigMissedError"
 	      class="ru.eshangin.compositelaunch.internal.UpdateCompositeViewerConfigMissedStatusHandler"

@@ -9,7 +9,7 @@ import org.eclipse.ui.dialogs.PatternFilter;
 /**
  * Select launchers tree view extended by filter
  */
-public class FilteredSelectLaunchersTreeView extends FilteredTree {
+class FilteredSelectLaunchersTreeView extends FilteredTree {
 
 	public FilteredSelectLaunchersTreeView(Composite parent) {
 		super(parent, SWT.BORDER | SWT.FULL_SELECTION, new PatternFilter(), true);

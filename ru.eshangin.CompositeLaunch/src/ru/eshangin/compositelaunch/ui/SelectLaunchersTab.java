@@ -11,8 +11,10 @@ import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.IStatusHandler;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
@@ -34,7 +36,6 @@ import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.statushandlers.StatusManager;
 import org.osgi.framework.Bundle;
 
 import ru.eshangin.compositelaunch.Activator;
@@ -226,22 +227,6 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 		// do nothing because there is no need to set defaults for newly created configuration
 	}
 	
-	/**
-	 * Creates warn message for the case when some user opens composite configuration with
-	 * some deleted previously selected launch configurations
-	 */
-	private String createNotFoundConfigsMessage(List<CompositeConfigurationItem> configItems) {
-		String messageTmpl = CompositeLaunchConfigurationConstants.MSG_TMPL_PREVIOUSLY_SELECTED_CONFS_DELETED;
-		
-		String messageTmplArg = "";
-		
-		for (CompositeConfigurationItem conf : configItems) {
-			messageTmplArg += String.format("%n%1s of type %2s", conf.getLaunchConfigurationName(), conf.getLaunchConfigurationTypeName());
-		}
-		
-		return String.format(messageTmpl, messageTmplArg);
-	}
-	
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 
@@ -258,22 +243,10 @@ public class SelectLaunchersTab extends AbstractLaunchConfigurationTab {
 			if (!removedItems.isEmpty()) {
 				Status errorStatus = new Status(IStatus.WARNING, Activator.PLUGIN_ID,
 						CompositeLaunchConfigurationConstants.STATUSCODE_UPDATE_COMPOSITE_VIEWER_MISSED_CONFIG, 
-						createNotFoundConfigsMessage(removedItems), null);
+						"", null);
 				
-//				AbstractStatusHandler handler = StatusHandlerRegistry.getDefault().getHandlerDescriptor("ru.eshangin.UpdateCompositeViewerConfigMissedError")
-//						.getStatusHandler();
-//				handler.handle(new StatusAdapter(new Status(IStatus.ERROR,
-//							Activator.PLUGIN_ID, "")), StatusManager.NONE);
-				
-//				IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(errorStatus);
-//				
-//				handler.handleStatus(errorStatus, null);
-				
-				StatusManager.getManager().handle(errorStatus, StatusManager.SHOW);
-				
-				
-//				MessageDialog.openWarning(DebugUIPlugin.getShell(), 
-//						CompositeLaunchConfigurationConstants.MSG_FYI, createNotFoundConfigsMessage(removedItems));
+				IStatusHandler handler = DebugPlugin.getDefault().getStatusHandler(errorStatus);				
+				handler.handleStatus(errorStatus, removedItems);
 			}
 		    
 		} catch (InvalidRegistryObjectException e) {
